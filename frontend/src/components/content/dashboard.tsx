@@ -1,4 +1,4 @@
-import { Empty } from "@douyinfe/semi-ui";
+import { Empty } from '@douyinfe/semi-ui';
 import { IllustrationNoContent, IllustrationNoContentDark } from '@douyinfe/semi-illustrations';
 
 export default function Dashboard() {
