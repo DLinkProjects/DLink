@@ -3,10 +3,11 @@ import {
   IconGithubLogo,
   IconSetting,
   IconDesktop,
-  IconGridView,
+  IconAppCenter,
   IconHistory,
   IconDuration,
   IconSun,
+  IconServer,
 } from '@douyinfe/semi-icons';
 import { BrowserOpenURL } from '@wailsApp/runtime';
 import { useNavigate } from 'react-router-dom';
@@ -16,15 +17,16 @@ import { motion, useAnimation } from 'framer-motion';
 
 export default function Sider() {
   const navigator = useNavigate();
-  const [selectedKeys, setSelectedKeys] = useState(['server']);
+  const [selectedKeys, setSelectedKeys] = useState(['dashboard']);
   const [settingsVisible, setSettingsVisible] = useState(false);
   useState(<IconDuration style={{ color: 'var(--semi-color-text-2)' }} size="large" />);
   const controlsSun = useAnimation();
   const controlsMoon = useAnimation();
 
   const navItems = [
-    { itemKey: 'server', text: '服务器', icon: <IconDesktop /> },
-    { itemKey: 'container', text: '容器', icon: <IconGridView /> },
+    { itemKey: 'dashboard', text: '仪表盘', icon: <IconDesktop /> },
+    { itemKey: 'server', text: '服务器', icon: <IconServer /> },
+    { itemKey: 'container', text: '容器', icon: <IconAppCenter /> },
     { itemKey: 'log', text: '日志', icon: <IconHistory /> },
   ];
 
