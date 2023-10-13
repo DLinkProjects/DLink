@@ -1,6 +1,6 @@
 package consts
 
 const (
-	DefaultWindowWidth  = 1024
+	DefaultWindowWidth  = 1200
 	DefaultWindowHeight = 768
 )
