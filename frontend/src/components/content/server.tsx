@@ -172,7 +172,6 @@ export default function Server() {
     );
   };
 
-  // @ts-ignore
   return (
     <div className="flex h-full overflow-hidden">
       <div className="flex-none w-80 h-full" style={serverListStyle}>
