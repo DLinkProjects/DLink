@@ -9,6 +9,7 @@ import {
   IconTreeTriangleRight,
   IconCopy,
   IconTick,
+  IconLink,
 } from '@douyinfe/semi-icons';
 import React, { useState } from 'react';
 import { RenderFullLabelProps } from '@douyinfe/semi-ui/lib/es/tree';
@@ -30,7 +31,7 @@ export default function Server() {
     borderRight: '1px solid var(--semi-color-border)',
   };
 
-  // Virtual data
+  // MOCK
   const generateData = (count: number) => {
     const data = [];
     for (let i = 0; i < count; i++) {
@@ -61,6 +62,7 @@ export default function Server() {
   };
   const data = generateData(10);
 
+  // MOCK
   const generatetableData = () => {
     const tableData = [];
     for (let i = 1; i <= 20; i++) {
@@ -74,7 +76,7 @@ export default function Server() {
       });
     }
     return tableData;
-  }
+  };
   const tableData = generatetableData();
 
   const Folder: React.FC<FolderProps> = ({ showIcon }) => {
@@ -84,9 +86,10 @@ export default function Server() {
     return <IconFolder />;
   };
 
-  const Action: React.FC = () => {
+  const Action: React.FC<any> = ({ serverValue, setServerValue }) => {
     return (
       <ButtonGroup size="small" theme="borderless">
+        <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />
         <Button icon={<IconEdit />} />
         <Button type="danger" icon={<IconDelete />} />
       </ButtonGroup>
@@ -138,8 +141,10 @@ export default function Server() {
       <li
         role="tree"
         className={`${className} flex justify-between h-[30px]`}
+        onDoubleClick={() => {
+          setServerValue(label?.toString() || '');
+        }}
         onClick={v => {
-          console.log(data);
           onCheck(v);
           setSelectedLabel(label?.toString() || null);
         }}
@@ -148,7 +153,7 @@ export default function Server() {
           {isLeaf ? null : expandIcon}
           {isLeaf ? (
             <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
-              <IconServer />
+              {label === selectedLabel ? <IconServer style={{ color: 'var(--semi-color-info)' }} /> : <IconServer />}
             </div>
           ) : (
             <div className="mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
@@ -160,7 +165,7 @@ export default function Server() {
 
         {label === selectedLabel && (
           <div>
-            <Action />
+            <Action serverValue={label} setServerValue={setServerValue} />
           </div>
         )}
       </li>
@@ -178,7 +183,6 @@ export default function Server() {
             treeData={data}
             filterTreeNode
             showClear
-            onChange={v => setServerValue(v ? v.toString() : '')}
             showFilteredOnly={true}
             renderFullLabel={renderLabel}
             onExpand={() => setFolderStatus(!folderStatus)}
@@ -230,7 +234,7 @@ export default function Server() {
               image={<IllustrationConstruction style={{ width: 150, height: 150 }} />}
               darkModeImage={<IllustrationConstructionDark style={{ width: 150, height: 150 }} />}
               title={'空空如也'}
-              description="当前未选择服务器，请选择服务器"
+              description="当前未选择服务器，双击列表中的服务器或者点击连接按钮连接服务器"
             />
           </div>
         )}
