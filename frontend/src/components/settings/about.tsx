@@ -1,7 +1,9 @@
-import { Typography, Divider, Modal } from '@douyinfe/semi-ui';
+import { Typography, Divider, Modal, ToastFactory } from '@douyinfe/semi-ui';
 import { BrowserOpenURL } from '@wailsApp/runtime';
+import { IconRefresh } from '@douyinfe/semi-icons';
 import React from 'react';
 import logo from '../../assets/images/logo-1024.png';
+import toast, { Toaster } from 'react-hot-toast';
 
 type AboutProps = {
   visible: boolean;
@@ -14,6 +16,16 @@ export default function About({ visible, setVisible }: AboutProps) {
   const footer = <></>;
   const onOpenBrowser = (url: string) => {
     BrowserOpenURL(url);
+  };
+
+  const onCheckUpdate = () => {
+    toast.success('当前是最新版本！', {
+      style: {
+        borderRadius: '8px',
+        background: 'var(--semi-color-bg-1)',
+        color: 'var(--semi-color-text-0)',
+      },
+    });
   };
 
   return (
@@ -44,11 +56,16 @@ export default function About({ visible, setVisible }: AboutProps) {
           >
             官方网站
           </Text>
+          <Divider layout="vertical" margin="12px" />
+          <Text onClick={onCheckUpdate} link underline icon={<IconRefresh />}>
+            检查更新
+          </Text>
         </div>
         <Text className="pt-3" style={{ color: 'var(--semi-color-text-2)' }}>
           Copyright © 2023 DLinkProjects All rights reserved
         </Text>
       </div>
+      <Toaster position="bottom-right" reverseOrder={false} />
     </Modal>
   );
 }
