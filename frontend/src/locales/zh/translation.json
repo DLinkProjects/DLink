@@ -10,5 +10,16 @@
   "addNewConnection": "添加新连接",
   "addNewGroup": "添加新组",
   "haveNothing": "空空如也",
-  "noServers": "当前未选择服务器，双击列表中的服务器或者点击连接按钮连接服务器"
+  "noServers": "当前未选择服务器，双击列表中的服务器或者点击连接按钮连接服务器",
+  "functionsUnderConstruction": "功能正在建设中",
+  "notYetOpen": "当前功能暂未开放",
+  "preference": "偏好设置",
+  "pleaseSelect": "请选择",
+  "checkingUpdates": "正在检查更新...",
+  "cancel": "取消",
+  "confirm": "确定",
+  "save": "保存",
+  "followSystem": "跟随系统",
+  "card": "卡片",
+  "list": "列表"
 }

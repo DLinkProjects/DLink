@@ -1,10 +1,15 @@
 import { RadioGroup, Radio, Card, CardGroup, Typography } from '@douyinfe/semi-ui';
 import React, { useState } from 'react';
 import { IconTick, IconCopy } from '@douyinfe/semi-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function Container() {
   const [viewSwitch, setviewSwitch] = useState('card');
   const { Paragraph, Title, Text } = Typography;
+  const { t } = useTranslation();
+
+  const card = t('card');
+  const list = t('list');
 
   // MOCK
   const containerList = [
@@ -95,8 +100,8 @@ export default function Container() {
           aria-label="视图切换"
           name="view-switch"
         >
-          <Radio value={'card'}>卡片</Radio>
-          <Radio value={'list'}>列表</Radio>
+          <Radio value={'card'}>{card}</Radio>
+          <Radio value={'list'}>{list}</Radio>
         </RadioGroup>
       </div>
       {/* TODO: 这里的高度有问题，应该是边框的高度没有被减去 */}

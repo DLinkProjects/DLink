@@ -14,9 +14,9 @@ i18n
       'zh-CN': {
         translation: zh,
       },
-      'en': {
+      en: {
         translation: en,
-      }
+      },
     },
     fallbackLng: 'zh-CN',
     interpolation: {
