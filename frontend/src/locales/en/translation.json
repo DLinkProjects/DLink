@@ -2,5 +2,13 @@
   "about": "About",
   "sourceCodeAddress": "source code",
   "officialWebsite": "official website",
-  "checkForUpdates": "check for updates"
+  "checkForUpdates": "check for updates",
+  "dashboard": "dashboard",
+  "servers": "servers",
+  "container": "container",
+  "log": "log",
+  "addNewConnection": "add new connection",
+  "addNewGroup": "add new group",
+  "haveNothing": "Have nothing",
+  "noServers": "No server is currently selected, double-click the server in the list or click the Connect button to connect to the server."
 }

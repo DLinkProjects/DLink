@@ -16,8 +16,10 @@ import { useState } from 'react';
 import Preferences from '@/components/settings/preferences';
 import About from '../settings/about';
 import { motion, useAnimation } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export default function Sider() {
+  const { t } = useTranslation();
   const navigator = useNavigate();
   const [selectedKeys, setSelectedKeys] = useState(['dashboard']);
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -26,11 +28,16 @@ export default function Sider() {
   const controlsSun = useAnimation();
   const controlsMoon = useAnimation();
 
+  const dashboard = t('dashboard');
+  const servers = t('servers');
+  const container = t('container');
+  const log = t('log');
+
   const navItems = [
-    { itemKey: 'dashboard', text: '仪表盘', icon: <IconDesktop /> },
-    { itemKey: 'server', text: '服务器', icon: <IconServer /> },
-    { itemKey: 'container', text: '容器', icon: <IconAppCenter /> },
-    { itemKey: 'log', text: '日志', icon: <IconHistory /> },
+    { itemKey: 'dashboard', text: dashboard, icon: <IconDesktop /> },
+    { itemKey: 'server', text: servers, icon: <IconServer /> },
+    { itemKey: 'container', text: container, icon: <IconAppCenter /> },
+    { itemKey: 'log', text: log, icon: <IconHistory /> },
   ];
 
   const switchMode = () => {

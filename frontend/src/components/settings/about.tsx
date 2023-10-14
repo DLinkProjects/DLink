@@ -31,45 +31,43 @@ export default function About({ visible, setVisible }: AboutProps) {
   };
 
   return (
-    <Trans>
-      <Modal title={t('about')} onCancel={() => setVisible(false)} visible={visible} footer={footer} centered>
-        <div className="flex items-center justify-center h-full flex-col">
-          <img src={logo} alt="logo" className="w-20 h-20" />
-          <Title className="pt-6" heading={4}>
-            Docker Link
-          </Title>
-          <Text className="pt-3">V1.0.0</Text>
-          <div className="pt-3">
-            <Text
-              onClick={() => {
-                onOpenBrowser('https://github.com/DLinkProjects/DLink');
-              }}
-              link
-              underline
-            >
-              {t('sourceCodeAddress')}
-            </Text>
-            <Divider layout="vertical" margin="12px" />
-            <Text
-              onClick={() => {
-                onOpenBrowser('https://github.com/DLinkProjects/DLink');
-              }}
-              link
-              underline
-            >
-              {t('officialWebsite')}
-            </Text>
-            <Divider layout="vertical" margin="12px" />
-            <Text onClick={onCheckUpdate} link underline icon={<IconRefresh />}>
-              {t('checkForUpdates')}
-            </Text>
-          </div>
-          <Text className="pt-3" style={{ color: 'var(--semi-color-text-2)' }}>
-            Copyright © 2023 DLinkProjects All rights reserved
+    <Modal title={t('about')} onCancel={() => setVisible(false)} visible={visible} footer={footer} centered>
+      <div className="flex items-center justify-center h-full flex-col">
+        <img src={logo} alt="logo" className="w-20 h-20" />
+        <Title className="pt-6" heading={4}>
+          Docker Link
+        </Title>
+        <Text className="pt-3">V1.0.0</Text>
+        <div className="pt-3">
+          <Text
+            onClick={() => {
+              onOpenBrowser('https://github.com/DLinkProjects/DLink');
+            }}
+            link
+            underline
+          >
+            {t('sourceCodeAddress')}
+          </Text>
+          <Divider layout="vertical" margin="12px" />
+          <Text
+            onClick={() => {
+              onOpenBrowser('https://github.com/DLinkProjects/DLink');
+            }}
+            link
+            underline
+          >
+            {t('officialWebsite')}
+          </Text>
+          <Divider layout="vertical" margin="12px" />
+          <Text onClick={onCheckUpdate} link underline icon={<IconRefresh />}>
+            {t('checkForUpdates')}
           </Text>
         </div>
-        <Toaster position="bottom-right" reverseOrder={false} />
-      </Modal>
-    </Trans>
+        <Text className="pt-3" style={{ color: 'var(--semi-color-text-2)' }}>
+          Copyright © 2023 DLinkProjects All rights reserved
+        </Text>
+      </div>
+      <Toaster position="bottom-right" reverseOrder={false} />
+    </Modal>
   );
 }

@@ -2,5 +2,13 @@
   "about": "关于",
   "sourceCodeAddress": "源码地址",
   "officialWebsite": "官方网站",
-  "checkForUpdates": "检查更新"
+  "checkForUpdates": "检查更新",
+  "dashboard": "仪表盘",
+  "servers": "服务器",
+  "container": "容器",
+  "log": "日志",
+  "addNewConnection": "添加新连接",
+  "addNewGroup": "添加新组",
+  "haveNothing": "空空如也",
+  "noServers": "当前未选择服务器，双击列表中的服务器或者点击连接按钮连接服务器"
 }

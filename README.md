@@ -1,4 +1,4 @@
-<h4 align="right"><strong><a href="/">English</a></strong> | 简体中文</h4>
+把内容翻译成英文<h4 align="right"><strong><a href="https://github.com/DLinkProjects/DLink/blob/main/README.md">English</a></strong> | 简体中文</h4>
 <div align="center">
 <a href="https://github.com/tiny-craft/tiny-rdm/"><img src="build/appicon.png" width="120"/></a>
 </div>

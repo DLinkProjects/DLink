@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import { RenderFullLabelProps } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
+import { useTranslation } from 'react-i18next';
 
 type FolderProps = {
   showIcon: boolean;
@@ -23,6 +24,7 @@ type FolderProps = {
 export default function Server() {
   const { Column } = Table;
   const { Paragraph, Text } = Typography;
+  const { t } = useTranslation();
   const [serverValue, setServerValue] = useState('');
   const [folderStatus, setFolderStatus] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
@@ -202,12 +204,12 @@ export default function Server() {
             style={{ borderTop: '1px solid var(--semi-color-border)' }}
           >
             <div className="flex ml-2">
-              <Tooltip content={'添加新连接'}>
+              <Tooltip content={t('addNewConnection')}>
                 <div className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer">
                   <IconCopyAdd style={{ color: 'var(--semi-color-text-2)' }} size="large" />
                 </div>
               </Tooltip>
-              <Tooltip content={'添加新分组'}>
+              <Tooltip content={t('addNewGroup')}>
                 <div className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer">
                   <IconFolderOpen style={{ color: 'var(--semi-color-text-2)' }} size="large" />
                 </div>
@@ -244,8 +246,8 @@ export default function Server() {
             <Empty
               image={<IllustrationConstruction style={{ width: 150, height: 150 }} />}
               darkModeImage={<IllustrationConstructionDark style={{ width: 150, height: 150 }} />}
-              title={'空空如也'}
-              description="当前未选择服务器，双击列表中的服务器或者点击连接按钮连接服务器"
+              title={t('haveNothing')}
+              description={t('noServers')}
             />
           </div>
         )}
