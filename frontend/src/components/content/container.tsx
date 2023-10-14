@@ -34,7 +34,7 @@ export default function Container() {
 
   if (viewSwitch === 'card') {
     containerView = (
-      <div className="flex m-2">
+      <div className="flex">
         <CardGroup>
           {containerList.map(item => (
             <Card style={{ maxWidth: 360 }}>
@@ -47,10 +47,14 @@ export default function Container() {
                   <Text>{item.image}</Text>
                 </span>
                 <span className="mb-1">
-                  <Text>{item.port} {item.cpu}</Text>
+                  <Text>
+                    {item.port} {item.cpu}
+                  </Text>
                 </span>
                 <span className="mb-1">
-                  <Text>{item.status} {item.latStarted}</Text>
+                  <Text>
+                    {item.status} {item.latStarted}
+                  </Text>
                 </span>
                 <Paragraph
                   copyable={{

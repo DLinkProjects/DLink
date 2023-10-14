@@ -14,6 +14,7 @@ import {
 import React, { useState } from 'react';
 import { RenderFullLabelProps } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
+import { Resizable } from 're-resizable';
 
 type FolderProps = {
   showIcon: boolean;
@@ -29,6 +30,7 @@ export default function Server() {
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
     borderRight: '1px solid var(--semi-color-border)',
+    // midwidth: '200px',
   };
 
   // MOCK
@@ -174,7 +176,16 @@ export default function Server() {
 
   return (
     <div className="flex h-full overflow-hidden">
-      <div className="flex-none w-80 h-full" style={serverListStyle}>
+      {/* <div className="flex-none w-80 h-full" style={serverListStyle}> */}
+      <Resizable
+        style={serverListStyle}
+        defaultSize={{ width: 250, height: '100%' }}
+        minWidth={250}
+        maxWidth={350}
+        enable={{
+          right: true,
+        }}
+      >
         <div className="flex flex-col h-full">
           <Tree
             className="flex-grow h-0"
@@ -207,7 +218,8 @@ export default function Server() {
             </div>
           </div>
         </div>
-      </div>
+      </Resizable>
+      {/* </div> */}
       <div className="flex flex-grow h-full w-full">
         {serverValue ? (
           <div className="overflow-auto max-h-full w-full">
