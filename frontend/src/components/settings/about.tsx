@@ -4,6 +4,7 @@ import { IconRefresh } from '@douyinfe/semi-icons';
 import React from 'react';
 import logo from '../../assets/images/logo-1024.png';
 import toast, { Toaster } from 'react-hot-toast';
+import { useTranslation, Trans } from 'react-i18next';
 
 type AboutProps = {
   visible: boolean;
@@ -12,6 +13,7 @@ type AboutProps = {
 
 export default function About({ visible, setVisible }: AboutProps) {
   const { Text, Title } = Typography;
+  const { t } = useTranslation();
 
   const footer = <></>;
   const onOpenBrowser = (url: string) => {
@@ -29,43 +31,45 @@ export default function About({ visible, setVisible }: AboutProps) {
   };
 
   return (
-    <Modal title="关于" onCancel={() => setVisible(false)} visible={visible} footer={footer} centered>
-      <div className="flex items-center justify-center h-full flex-col">
-        <img src={logo} alt="logo" className="w-20 h-20" />
-        <Title className="pt-6" heading={4}>
-          Docker Link
-        </Title>
-        <Text className="pt-3">V1.0.0</Text>
-        <div className="pt-3">
-          <Text
-            onClick={() => {
-              onOpenBrowser('https://github.com/DLinkProjects/DLink');
-            }}
-            link
-            underline
-          >
-            源码地址
-          </Text>
-          <Divider layout="vertical" margin="12px" />
-          <Text
-            onClick={() => {
-              onOpenBrowser('https://github.com/DLinkProjects/DLink');
-            }}
-            link
-            underline
-          >
-            官方网站
-          </Text>
-          <Divider layout="vertical" margin="12px" />
-          <Text onClick={onCheckUpdate} link underline icon={<IconRefresh />}>
-            检查更新
+    <Trans>
+      <Modal title={t('about')} onCancel={() => setVisible(false)} visible={visible} footer={footer} centered>
+        <div className="flex items-center justify-center h-full flex-col">
+          <img src={logo} alt="logo" className="w-20 h-20" />
+          <Title className="pt-6" heading={4}>
+            Docker Link
+          </Title>
+          <Text className="pt-3">V1.0.0</Text>
+          <div className="pt-3">
+            <Text
+              onClick={() => {
+                onOpenBrowser('https://github.com/DLinkProjects/DLink');
+              }}
+              link
+              underline
+            >
+              {t('sourceCodeAddress')}
+            </Text>
+            <Divider layout="vertical" margin="12px" />
+            <Text
+              onClick={() => {
+                onOpenBrowser('https://github.com/DLinkProjects/DLink');
+              }}
+              link
+              underline
+            >
+              {t('officialWebsite')}
+            </Text>
+            <Divider layout="vertical" margin="12px" />
+            <Text onClick={onCheckUpdate} link underline icon={<IconRefresh />}>
+              {t('checkForUpdates')}
+            </Text>
+          </div>
+          <Text className="pt-3" style={{ color: 'var(--semi-color-text-2)' }}>
+            Copyright © 2023 DLinkProjects All rights reserved
           </Text>
         </div>
-        <Text className="pt-3" style={{ color: 'var(--semi-color-text-2)' }}>
-          Copyright © 2023 DLinkProjects All rights reserved
-        </Text>
-      </div>
-      <Toaster position="bottom-right" reverseOrder={false} />
-    </Modal>
+        <Toaster position="bottom-right" reverseOrder={false} />
+      </Modal>
+    </Trans>
   );
 }

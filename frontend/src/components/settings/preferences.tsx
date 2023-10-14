@@ -1,7 +1,7 @@
-import { Empty, Modal } from '@douyinfe/semi-ui';
-import { Button } from '@douyinfe/semi-ui';
+import { Empty, Modal, TreeSelect, Button } from '@douyinfe/semi-ui';
 import { IllustrationNoContent, IllustrationNoContentDark } from '@douyinfe/semi-illustrations';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type PreferencesProps = {
   visible: boolean;
@@ -9,9 +9,30 @@ type PreferencesProps = {
 };
 
 export default function Preferences({ visible, setVisible }: PreferencesProps) {
+  const { i18n } = useTranslation();
+
+
   const onClose = () => {
     setVisible(false);
   };
+
+  const onSetLanguage = (value: string) => {
+    i18n.changeLanguage(value);
+    console.log(value);
+  }
+
+  const treeData = [
+    {
+      label: '中文',
+      value: 'zh-CN',
+      key: '0',
+    },
+    {
+      label: 'English',
+      value: 'en',
+      key: '1',
+    },
+  ];
 
   const header = (
     <div>
@@ -33,6 +54,13 @@ export default function Preferences({ visible, setVisible }: PreferencesProps) {
     <>
       <Modal title="用户偏好设置" visible={visible} header={header} footer={footer}>
         <div className="flex items-center justify-center h-full flex-col">
+          <TreeSelect
+            style={{ width: 300 }}
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            treeData={treeData}
+            placeholder="请选择"
+            onChange={(value) => onSetLanguage(value?.toString() || "")}
+          />
           <Empty
             image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
             darkModeImage={<IllustrationNoContentDark style={{ width: 150, height: 150 }} />}

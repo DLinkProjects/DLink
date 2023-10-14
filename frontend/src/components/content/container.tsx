@@ -1,7 +1,6 @@
-import { Empty, RadioGroup, Radio, Card, CardGroup, Typography } from '@douyinfe/semi-ui';
-import { IllustrationNoContent, IllustrationNoContentDark } from '@douyinfe/semi-illustrations';
+import { RadioGroup, Radio, Card, CardGroup, Typography } from '@douyinfe/semi-ui';
 import React, { useState } from 'react';
-import { IconListView, IconGridView, IconTick, IconCopy } from '@douyinfe/semi-icons';
+import { IconTick, IconCopy } from '@douyinfe/semi-icons';
 
 export default function Container() {
   const [viewSwitch, setviewSwitch] = useState('card');
@@ -16,7 +15,8 @@ export default function Container() {
       cpu: '1.12%',
       port: '2023-10-11',
       latStarted: '2 days ago',
-      hash: '067a81ed9c4f117bf1c63c7144b96f1f861288ad9359c04d4ea0bd64c85a0c25',
+      hash: '067a81ed9c4f117bf1c63c7144b96f1f861288ad9359c04d4ea0bd64c85a0c26',
+      key: '067a81ed9c4f117bf1c63c7144b96f1f861288ad9359c04d4ea0bd64c85a0c26',
     },
     {
       name: 'redis1',
@@ -37,7 +37,7 @@ export default function Container() {
       <div className="flex">
         <CardGroup>
           {containerList.map(item => (
-            <Card style={{ maxWidth: 360 }}>
+            <Card key={item.key} style={{ maxWidth: 360 }}>
               {/* <Meta title="Semi Doc" description="全面、易用、优质" /> */}
               <div className="flex flex-col">
                 <span className="mb-1">

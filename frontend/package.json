@@ -12,10 +12,14 @@
   "dependencies": {
     "@douyinfe/semi-ui": "^2.44.0",
     "framer-motion": "^10.16.4",
+    "i18next": "^23.5.1",
+    "i18next-browser-languagedetector": "^7.1.0",
+    "i18next-http-backend": "^2.2.2",
     "re-resizable": "^6.9.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
+    "react-i18next": "^13.3.0",
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
