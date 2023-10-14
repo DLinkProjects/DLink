@@ -8,17 +8,20 @@ import {
   IconDuration,
   IconSun,
   IconServer,
+  IconInfoCircle,
 } from '@douyinfe/semi-icons';
 import { BrowserOpenURL } from '@wailsApp/runtime';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Preferences from '@/components/settings/preferences';
+import About from '../settings/about';
 import { motion, useAnimation } from 'framer-motion';
 
 export default function Sider() {
   const navigator = useNavigate();
   const [selectedKeys, setSelectedKeys] = useState(['dashboard']);
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [aboutVisible, setAboutVisible] = useState(false);
   useState(<IconDuration style={{ color: 'var(--semi-color-text-2)' }} size="large" />);
   const controlsSun = useAnimation();
   const controlsMoon = useAnimation();
@@ -55,6 +58,10 @@ export default function Sider() {
 
   const onOpenSetting = () => {
     setSettingsVisible(true);
+  };
+
+  const onOpenAbout = () => {
+    setAboutVisible(true);
   };
 
   return (
@@ -108,8 +115,15 @@ export default function Sider() {
             <IconDuration style={{ color: 'var(--semi-color-text-2)' }} size="large" />
           </motion.div>
         </div>
+        <div
+          onClick={onOpenAbout}
+          className="w-11 h-9 mt-2 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer"
+        >
+          <IconInfoCircle style={{ color: 'var(--semi-color-text-2)' }} size="large" />
+        </div>
       </div>
       <Preferences visible={settingsVisible} setVisible={setSettingsVisible} />
+      <About visible={aboutVisible} setVisible={setAboutVisible} />
     </div>
   );
 }
