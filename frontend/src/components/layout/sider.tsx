@@ -12,7 +12,7 @@ import {
 } from '@douyinfe/semi-icons';
 import { BrowserOpenURL } from '@wailsApp/runtime';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Preferences from '@/components/settings/preferences';
 import About from '../settings/about';
 import { motion, useAnimation } from 'framer-motion';
@@ -53,6 +53,31 @@ export default function Sider() {
       controlsMoon.start({ rotateY: 0 });
     }
   };
+
+  // 监听系统主题变化
+  useEffect(() => {
+    type MediaQueryListEvent = {
+      matches: boolean;
+      media: string;
+    };
+
+    const mql: MediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function matchMode(e: MediaQueryListEvent): void {
+      const body: HTMLElement = document.body;
+
+      if (e.matches) {
+        if (!body.hasAttribute('theme-mode')) {
+          body.setAttribute('theme-mode', 'dark');
+        }
+      } else {
+        if (body.hasAttribute('theme-mode')) {
+          body.removeAttribute('theme-mode');
+        }
+      }
+    }
+    mql.addEventListener('change', matchMode);
+  });
 
   const onNavSelect = (key: any) => {
     navigator('/' + key.itemKey);
@@ -109,9 +134,8 @@ export default function Sider() {
             className="absolute"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <IconSun style={{ color: 'var(--semi-color-text-2)' }} size="large" />
+            <IconDuration style={{ color: 'var(--semi-color-text-2)' }} size="large" />
           </motion.div>
-
           <motion.div
             animate={controlsMoon}
             initial={{ rotateY: -180 }}
@@ -119,7 +143,7 @@ export default function Sider() {
             className="absolute"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <IconDuration style={{ color: 'var(--semi-color-text-2)' }} size="large" />
+            <IconSun style={{ color: 'var(--semi-color-text-2)' }} size="large" />
           </motion.div>
         </div>
         <div
