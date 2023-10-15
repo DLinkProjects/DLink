@@ -42,7 +42,6 @@ export default function Sider() {
 
   const switchMode = () => {
     const body = document.body;
-
     if (body.hasAttribute('theme-mode')) {
       body.removeAttribute('theme-mode');
       controlsSun.start({ rotateY: 0 });
@@ -60,9 +59,7 @@ export default function Sider() {
       matches: boolean;
       media: string;
     };
-
     const mql: MediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-
     function matchMode(e: MediaQueryListEvent): void {
       const body: HTMLElement = document.body;
 
