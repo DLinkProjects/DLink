@@ -4,7 +4,10 @@ go 1.21
 
 require (
 	github.com/docker/docker v24.0.6+incompatible
+	github.com/jmoiron/sqlx v1.3.5
+	github.com/mattn/go-sqlite3 v1.14.6
 	github.com/stretchr/testify v1.8.1
+	github.com/vrischmann/userdir v0.0.0-20151206171402-20f291cebd68
 	github.com/wailsapp/wails/v2 v2.6.0
 )
 
