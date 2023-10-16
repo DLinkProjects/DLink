@@ -1,11 +1,10 @@
 package main
 
 import (
-	"context"
 	"embed"
 	"fmt"
+	"github.com/DLinkProjects/DLink/backend"
 	"github.com/DLinkProjects/DLink/backend/consts"
-	"github.com/DLinkProjects/DLink/backend/global"
 	"github.com/DLinkProjects/DLink/backend/services"
 	"github.com/DLinkProjects/DLink/backend/utils/base"
 	"github.com/wailsapp/wails/v2"
@@ -14,6 +13,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	"log"
 )
 
 //go:embed all:frontend/dist
@@ -23,9 +23,7 @@ var assets embed.FS
 var icon []byte
 
 func main() {
-	global.Register()
-	defer global.Unregister()
-
+	app := &backend.App{}
 	preference := services.NewPreferences()
 
 	err := wails.Run(&options.App{
@@ -39,8 +37,8 @@ func main() {
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 0},
-		OnStartup: func(ctx context.Context) {
-		},
+		OnStartup:        app.Startup,
+		OnShutdown:       app.Shutdown,
 		Bind: []any{
 			preference,
 		},
@@ -67,6 +65,6 @@ func main() {
 	})
 
 	if err != nil {
-		println("Error:", err.Error())
+		log.Fatal(err)
 	}
 }
