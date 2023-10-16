@@ -1,15 +1,51 @@
-import { Empty } from "@douyinfe/semi-ui";
-import { IllustrationNoContent, IllustrationNoContentDark } from '@douyinfe/semi-illustrations';
+import { Card } from '@douyinfe/semi-ui';
+import { IconServer, IconHelm, IconKanban } from '@douyinfe/semi-icons';
 
 export default function Dashboard() {
   return (
-    <div className="flex items-center justify-center h-full flex-col">
-      <Empty
-        image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
-        darkModeImage={<IllustrationNoContentDark style={{ width: 150, height: 150 }} />}
-        title={'功能建设中'}
-        description="当前功能暂未开放，敬请期待。"
-      />
-    </div>
+    <>
+      <div className="flex flex-row gap-4 m-4">
+        <div className="basis-1/4">
+          <Card>
+            <IconServer className="text-6xl" />
+            <div className="float-right text-center">
+              <div className="text-current">服务器</div>
+              <span className="text-4xl text-black">65</span>
+            </div>
+          </Card>
+        </div>
+        <div className="basis-1/4">
+          <Card>
+            <IconHelm className="text-6xl" />
+            <div className="float-right text-center">
+              <div className="text-current">镜像</div>
+              <span className="text-4xl text-black">65</span>
+            </div>
+          </Card>
+        </div>
+        <div className="basis-1/4">
+          <Card>
+            <IconKanban className="text-6xl" />
+            <div className="float-right text-center">
+              <div className="text-current">容器</div>
+              <span className="text-4xl text-black">65</span>
+            </div>
+          </Card>
+        </div>
+        <div className="basis-1/4">
+          <Card>
+            <IconServer className="text-6xl" />
+            <div className="float-right text-center">
+              <div className="text-current">服务器数</div>
+              <span className="text-4xl text-black">65</span>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <div className="gap-4 m-4">
+        <Card>11111</Card>
+      </div>
+    </>
   );
 }
