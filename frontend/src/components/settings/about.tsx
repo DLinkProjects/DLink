@@ -1,10 +1,11 @@
 import { Typography, Divider, Modal, ToastFactory } from '@douyinfe/semi-ui';
 import { BrowserOpenURL } from '@wailsApp/runtime';
 import { IconRefresh } from '@douyinfe/semi-icons';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../../assets/images/logo-1024.png';
 import toast, { Toaster } from 'react-hot-toast';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { GetDLinkVersion } from '@wailsApp/go/services/Preferences';
 
 type AboutProps = {
   visible: boolean;
@@ -14,6 +15,13 @@ type AboutProps = {
 export default function About({ visible, setVisible }: AboutProps) {
   const { Text, Title } = Typography;
   const { t } = useTranslation();
+  const [version, setVersion] = useState('Unknown');
+
+  useEffect(() => {
+    GetDLinkVersion().then(ver => {
+      setVersion(ver);
+    });
+  }, []);
 
   const footer = <></>;
   const onOpenBrowser = (url: string) => {
@@ -37,7 +45,7 @@ export default function About({ visible, setVisible }: AboutProps) {
         <Title className="pt-6" heading={4}>
           Docker Link
         </Title>
-        <Text className="pt-3">V1.0.0</Text>
+        <Text className="pt-3">{version}</Text>
         <div className="pt-3">
           <Text
             onClick={() => {

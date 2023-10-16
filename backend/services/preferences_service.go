@@ -1,6 +1,9 @@
 package services
 
-import "runtime"
+import (
+	"github.com/DLinkProjects/DLink/backend/utils/base"
+	"runtime"
+)
 
 type Preferences struct{}
 
@@ -22,4 +25,8 @@ func (p *Preferences) RestoreDefault() {
 
 func (p *Preferences) GetSysVersion() string {
 	return runtime.GOOS
+}
+
+func (p *Preferences) GetDLinkVersion() string {
+	return base.Version
 }

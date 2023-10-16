@@ -3,18 +3,24 @@ package main
 import (
 	"context"
 	"embed"
+	"fmt"
 	"github.com/DLinkProjects/DLink/backend/consts"
 	"github.com/DLinkProjects/DLink/backend/global"
 	"github.com/DLinkProjects/DLink/backend/services"
+	"github.com/DLinkProjects/DLink/backend/utils/base"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
+
+//go:embed build/appicon.png
+var icon []byte
 
 func main() {
 	global.Register()
@@ -45,6 +51,18 @@ func main() {
 		},
 		Mac: &mac.Options{
 			TitleBar: mac.TitleBarHiddenInset(),
+			About: &mac.AboutInfo{
+				Title:   fmt.Sprintf("%s %s", consts.ProjectName, base.Version),
+				Message: "Copyright © 2023 DLinkProjects All rights reserved",
+				Icon:    icon,
+			},
+			WebviewIsTransparent: false,
+			WindowIsTranslucent:  false,
+		},
+		Linux: &linux.Options{
+			Icon:                icon,
+			WebviewGpuPolicy:    linux.WebviewGpuPolicyOnDemand,
+			WindowIsTranslucent: true,
 		},
 	})
 
