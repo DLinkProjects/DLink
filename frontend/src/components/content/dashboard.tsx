@@ -1,7 +1,9 @@
 import { Card } from '@douyinfe/semi-ui';
 import { IconServer, IconHelm, IconKanban } from '@douyinfe/semi-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   return (
     <>
       <div className="flex flex-row gap-4 m-4">
@@ -44,7 +46,7 @@ export default function Dashboard() {
       </div>
 
       <div className="gap-4 m-4">
-        <Card>11111</Card>
+        <Card></Card>
       </div>
     </>
   );
