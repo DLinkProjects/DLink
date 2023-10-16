@@ -4,18 +4,18 @@ import { useTranslation } from 'react-i18next';
 import ReactECharts, { EChartsInstance } from 'echarts-for-react';
 import { useEffect, useRef, useState } from 'react';
 import { throttle } from 'lodash';
-import React from 'react';
 
 export default function Dashboard() {
   const { t } = useTranslation();
 
-  const option = {
+  const containerStatusOption = {
     title: {
       text: 'Container Status',
       left: 'center',
     },
     tooltip: {
       trigger: 'item',
+      extraCssText: 'box-shadow:none;',
     },
     legend: {
       orient: 'vertical',
@@ -36,16 +36,46 @@ export default function Dashboard() {
         ],
         emphasis: {
           itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            shadowBlur: 0,
           },
         },
       },
     ],
   };
 
-  const chartRef1 = useRef<EChartsInstance>();
+  // const networkFlowOption = {
+  //   title: {
+  //     text: 'Network Flow',
+  //     left: 'center',
+  //   },
+  //   tooltip: {
+  //     trigger: 'item',
+  //     extraCssText: 'box-shadow:none;',
+  //   },
+  //   xAxis: {
+  //     type: 'category',
+  //     boundaryGap: false,
+  //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  //   },
+  //   yAxis: {
+  //     type: 'value',
+  //   },
+  //   series: [
+  //     {
+  //       data: [120, 132, 101, 34, 290, 330, 320],
+  //       type: 'line',
+  //       areaStyle: {},
+  //     },
+  //     {
+  //       data: [120, 232, 201, 134, 190, 130, 132],
+  //       type: 'line',
+  //       areaStyle: {},
+  //     },
+  //   ],
+  // };
+
+  const containerStatusRef = useRef<EChartsInstance>();
+  // const networkFlowRef = useRef<EChartsInstance>();
   const chartRef2 = useRef<EChartsInstance>();
 
   const body = document.body;
@@ -54,7 +84,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     const handleResize = throttle(() => {
-      if (chartRef1.current) chartRef1.current.resize();
+      if (containerStatusRef.current) containerStatusRef.current.resize();
+      // if (networkFlowRef.current) networkFlowRef.current.resize();
       if (chartRef2.current) chartRef2.current.resize();
     }, 100);
 
@@ -106,15 +137,21 @@ export default function Dashboard() {
       <div className="flex flex-row gap-4 m-4">
         <div className="basis-1/2">
           <Card>
-            <ReactECharts theme={chartTheme} ref={chartRef1} option={option} />
+            <ReactECharts theme={chartTheme} ref={containerStatusRef} option={containerStatusOption} />
           </Card>
         </div>
         <div className="basis-1/2">
           <Card>
-            <ReactECharts theme={chartTheme} ref={chartRef2} option={option} />
+            <ReactECharts theme={chartTheme} ref={chartRef2} option={containerStatusOption} />
           </Card>
         </div>
       </div>
+
+      {/* <div className="gap-4 m-4">
+        <Card>
+          <ReactECharts theme={chartTheme} ref={networkFlowRef} option={networkFlowOption} />
+        </Card>
+      </div> */}
     </>
   );
 }
