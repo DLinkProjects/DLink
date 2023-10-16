@@ -25,6 +25,10 @@ func NewDatabase() *sqlx.DB {
 	if err != nil {
 		panic(err)
 	}
+	_, err = os.Stat(dsn.Path)
+	if !os.IsNotExist(err) {
+		return db
+	}
 	createTables(db)
 	return db
 }
@@ -43,12 +47,12 @@ func createTables(db *sqlx.DB) {
 		);`
 
 	const nodesTables = `
-	CREATE TABLE nodes (
-    	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    	parent_id INTEGER,
-    	type TEXT NOT NULL CHECK(type IN ('server', 'group')),
-    	name TEXT NOT NULL
-	);`
+		CREATE TABLE nodes (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			parent_id INTEGER,
+			type TEXT NOT NULL CHECK(type IN ('server', 'group')),
+			name TEXT NOT NULL
+		);`
 
 	tables := []string{serversTables, nodesTables}
 
