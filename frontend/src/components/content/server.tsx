@@ -215,9 +215,6 @@ export default function Server() {
                 </div>
               </Tooltip>
             </div>
-            <div className="flex mr-2">
-              <p style={{ color: 'var(--semi-color-text-2)' }}>Ver: 1.0.0</p>
-            </div>
           </div>
         </div>
       </Resizable>
