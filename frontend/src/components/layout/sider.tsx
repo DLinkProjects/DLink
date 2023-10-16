@@ -36,7 +36,7 @@ export default function Sider() {
 
   const navItems = [
     { itemKey: 'dashboard', text: dashboard, icon: <IconDesktop /> },
-    { itemKey: 'server', text: servers, icon: <IconServer /> },
+    { itemKey: 'servers', text: servers, icon: <IconServer /> },
     { itemKey: 'container', text: container, icon: <IconAppCenter /> },
     { itemKey: 'log', text: log, icon: <IconHistory /> },
   ];

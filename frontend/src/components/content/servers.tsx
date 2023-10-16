@@ -21,7 +21,7 @@ type FolderProps = {
   showIcon: boolean;
 };
 
-export default function Server() {
+export default function Servers() {
   const { Column } = Table;
   const { Paragraph, Text } = Typography;
   const { t } = useTranslation();
@@ -32,7 +32,6 @@ export default function Server() {
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
     borderRight: '1px solid var(--semi-color-border)',
-    // midwidth: '200px',
   };
 
   // MOCK
@@ -190,6 +189,7 @@ export default function Server() {
       >
         <div className="flex flex-col h-full">
           <Tree
+            // draggable
             className="flex-grow h-0"
             expandAll={false}
             treeData={data}
@@ -218,7 +218,6 @@ export default function Server() {
           </div>
         </div>
       </Resizable>
-      {/* </div> */}
       <div className="flex flex-grow h-full w-full">
         {serverValue ? (
           <div className="overflow-auto max-h-full w-full">

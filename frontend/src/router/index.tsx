@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '@/App';
-import Server from '@/components/content/server';
+import Servers from '@/components/content/servers';
 import Container from '@/components/content/container';
 import Log from '@/components/content/log';
 import Dashboard from '@/components/content/dashboard';
@@ -19,8 +19,8 @@ const routers = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: '/server',
-        element: <Server />,
+        path: '/servers',
+        element: <Servers />,
       },
       {
         path: '/container',
