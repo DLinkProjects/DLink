@@ -43,7 +43,7 @@ export default function About({ visible, setVisible }: AboutProps) {
       <div className="flex items-center justify-center h-full flex-col">
         <img src={logo} alt="logo" className="w-20 h-20" />
         <Title className="pt-6" heading={4}>
-          Docker Link
+          DLink
         </Title>
         <Text className="pt-3">{version}</Text>
         <div className="pt-3">

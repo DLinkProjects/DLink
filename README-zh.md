@@ -2,7 +2,7 @@
 <div align="center">
 <a href="/"><img src="build/appicon.png" width="120"/></a>
 </div>
-<h1 align="center">Docker Link（开发中）</h1>
+<h1 align="center">DLink（开发中）</h1>
 <div align="center">
 
 [![License](https://img.shields.io/github/license/tiny-craft/tiny-rdm)](https://github.com/tiny-craft/tiny-rdm/blob/main/LICENSE)

@@ -31,7 +31,7 @@ export default function Header() {
       <div className="flex h-full justify-center items-center">
         <div className="flex items-center justify-center">
           <img src={Logo} alt="Logo" style={{ width: 24, height: 24 }} />
-          <span className="pl-2 text-base font-semibold">Docker Link</span>
+          <span className="pl-2 text-base font-semibold">DLink</span>
         </div>
       </div>
     );
@@ -41,7 +41,7 @@ export default function Header() {
         <div className="pl-2 flex">
           <div className="flex items-center">
             <img src={Logo} alt="Logo" style={{ width: 24, height: 24 }} />
-            <span className="pl-2 text-base font-semibold">Docker Link</span>
+            <span className="pl-2 text-base font-semibold">DLink</span>
           </div>
         </div>
         <div className="justify-self-end">
