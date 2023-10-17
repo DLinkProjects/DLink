@@ -10,6 +10,9 @@ import (
 
 func NewDatabase() *sqlx.DB {
 	localStorage := storage.NewLocalStorage(fmt.Sprintf("%s.%s", consts.ProjectName, consts.DatabaseDriver))
+	if err := localStorage.CreateDirectory(); err != nil {
+		panic(err)
+	}
 	db, err := sqlx.Open(consts.DatabaseDriver, localStorage.Path)
 	if err != nil {
 		panic(err)

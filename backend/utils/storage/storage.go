@@ -17,13 +17,14 @@ func NewLocalStorage(filename string) *LocalStorage {
 	return &LocalStorage{Path: path.Join(userdir.GetConfigHome(), consts.ProjectName, filename)}
 }
 
-func (l *LocalStorage) CreateDirectory() {
+func (l *LocalStorage) CreateDirectory() error {
 	l.dir = filepath.Dir(l.Path)
-	if !l.DirectoryExist() {
+	if !l.directoryExist() {
 		if err := os.MkdirAll(l.dir, 0755); err != nil {
-			panic("failed to create database directory")
+			return err
 		}
 	}
+	return nil
 }
 
 func (l *LocalStorage) DatabaseExist() bool {
@@ -31,7 +32,7 @@ func (l *LocalStorage) DatabaseExist() bool {
 	return !os.IsNotExist(err)
 }
 
-func (l *LocalStorage) DirectoryExist() bool {
+func (l *LocalStorage) directoryExist() bool {
 	_, err := os.Stat(l.dir)
 	return !os.IsNotExist(err)
 }
