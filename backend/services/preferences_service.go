@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/DLinkProjects/DLink/backend/utils/base"
+	"github.com/DLinkProjects/DLink/backend/pkg/base"
 	"runtime"
 )
 
