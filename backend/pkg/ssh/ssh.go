@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"net"
+	"strings"
 	"time"
 )
 
@@ -25,35 +26,40 @@ type Config struct {
 	PrivateKeyPassword string
 }
 
-type Adapter struct {
+type SecureShell struct {
 	conf   *Config
-	Client *ssh.Client
+	client *ssh.Client
 }
 
-func New(conf *Config) *Adapter {
-	return &Adapter{
+type SecureShellExec struct {
+	output string
+	err    error
+}
+
+func NewSSH(conf *Config) *SecureShell {
+	return &SecureShell{
 		conf: conf,
 	}
 }
 
-func (a *Adapter) Connect() (*Adapter, error) {
+func (s *SecureShell) Connect() (*SecureShell, error) {
 	var auth []ssh.AuthMethod
 
-	switch a.conf.AuthType {
+	switch s.conf.AuthType {
 	case PassAuth:
-		auth = append(auth, ssh.Password(a.conf.Password))
+		auth = append(auth, ssh.Password(s.conf.Password))
 	case KeyAuth:
-		signer, err := a.signer()
+		signer, err := s.signer()
 		if err != nil {
-			return a, err
+			return s, err
 		}
 		auth = append(auth, ssh.PublicKeys(signer))
 	default:
-		return a, errors.New("invalid authentication type provided")
+		return s, errors.New("invalid authentication type provided")
 	}
 
 	config := &ssh.ClientConfig{
-		User:    a.conf.User,
+		User:    s.conf.User,
 		Auth:    auth,
 		Timeout: 10 * time.Second,
 		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
@@ -61,26 +67,57 @@ func (a *Adapter) Connect() (*Adapter, error) {
 		},
 	}
 
-	client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", a.conf.Host, a.conf.Port), config)
+	client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", s.conf.Host, s.conf.Port), config)
 	if err != nil {
-		return a, err
+		return s, err
 	}
 
-	a.Client = client
-	return a, nil
+	s.client = client
+	return s, nil
 }
 
-func (a *Adapter) signer() (ssh.Signer, error) {
-	if a.conf.PrivateKeyPassword == "" {
-		return ssh.ParsePrivateKey([]byte(a.conf.PrivateKey))
+func (s *SecureShell) signer() (ssh.Signer, error) {
+	if s.conf.PrivateKeyPassword == "" {
+		return ssh.ParsePrivateKey([]byte(s.conf.PrivateKey))
 	} else {
-		return ssh.ParsePrivateKeyWithPassphrase([]byte(a.conf.PrivateKey), []byte(a.conf.PrivateKeyPassword))
+		return ssh.ParsePrivateKeyWithPassphrase([]byte(s.conf.PrivateKey), []byte(s.conf.PrivateKeyPassword))
 	}
 }
 
-func (a *Adapter) Close() {
-	if a.Client != nil {
-		_ = a.Client.Close()
-		a.Client = nil
+func (s *SecureShell) Close() {
+	if s.client != nil {
+		_ = s.client.Close()
+		s.client = nil
 	}
+}
+
+func (s *SecureShell) Run(cmd string) *SecureShellExec {
+	session, err := s.client.NewSession()
+	if err != nil {
+		return &SecureShellExec{
+			output: "",
+			err:    err,
+		}
+	}
+	defer func() {
+		_ = session.Close()
+	}()
+	buf, err := session.CombinedOutput(cmd)
+	return &SecureShellExec{
+		output: string(buf),
+		err:    err,
+	}
+}
+
+func (s *SecureShellExec) Raw() (string, error) {
+	return s.output, s.err
+}
+
+func (s *SecureShellExec) Unwrap() string {
+	if s.err != nil {
+		return ""
+	}
+	s.output = strings.Trim(s.output, "\n")
+	s.output = strings.TrimSpace(s.output)
+	return s.output
 }
