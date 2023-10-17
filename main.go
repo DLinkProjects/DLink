@@ -24,7 +24,9 @@ var icon []byte
 
 func main() {
 	app := &backend.App{}
-	preference := services.NewPreferences()
+
+	preferencesSrv := services.NewPreferences()
+	serverSrv := services.NewServer()
 
 	err := wails.Run(&options.App{
 		Title:     consts.ProjectName,
@@ -32,7 +34,7 @@ func main() {
 		Height:    consts.DefaultWindowHeight,
 		MinWidth:  consts.DefaultWindowWidth,
 		MinHeight: consts.DefaultWindowHeight,
-		Frameless: preference.GetSysVersion() != "darwin",
+		Frameless: preferencesSrv.GetSysVersion() != "darwin",
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -40,7 +42,8 @@ func main() {
 		OnStartup:        app.Startup,
 		OnShutdown:       app.Shutdown,
 		Bind: []any{
-			preference,
+			preferencesSrv,
+			serverSrv,
 		},
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,
