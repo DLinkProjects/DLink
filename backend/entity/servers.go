@@ -1,10 +1,10 @@
 package entity
 
 type Servers struct {
-	Id       int    `db:"id"`
-	Ip       string `db:"ip"`
-	Port     int    `db:"port"`
+	ID       uint   `db:"id"`
+	Host     string `db:"host"`
+	Port     uint16 `db:"port"`
 	Username string `db:"username"`
 	Password string `db:"password"`
-	Gid      int    `db:"gid"`
+	GID      uint   `db:"gid"`
 }

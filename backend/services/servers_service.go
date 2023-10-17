@@ -6,7 +6,7 @@ func NewServers() *Servers {
 	return &Servers{}
 }
 
-// AddServer 添加服务器
-func (s *Servers) AddServer() {
+// CreateServer 添加服务器
+func (s *Servers) CreateServer() {
 
 }

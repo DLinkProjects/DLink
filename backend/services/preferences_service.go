@@ -11,11 +11,11 @@ func NewPreferences() *Preferences {
 	return &Preferences{}
 }
 
-func (p *Preferences) Create() {
+func (p *Preferences) CreatePreferences() {
 
 }
 
-func (p *Preferences) Update() {
+func (p *Preferences) UpdatePreferences() {
 
 }
 

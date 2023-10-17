@@ -2,9 +2,6 @@ package initialize
 
 import (
 	"fmt"
-	"os"
-	"strings"
-
 	"github.com/DLinkProjects/DLink/backend/consts"
 	"github.com/DLinkProjects/DLink/backend/utils/storage"
 	"github.com/jmoiron/sqlx"
@@ -12,21 +9,12 @@ import (
 )
 
 func NewDatabase() *sqlx.DB {
-	dsn := storage.NewLocalStorage(fmt.Sprintf("%s.sqlite3", consts.ProjectName))
-	sqlPath := strings.Replace(dsn.Path, "DLink.sqlite3", "", -1)
-	_, err := os.Stat(sqlPath)
-	if os.IsNotExist(err) {
-		errDir := os.MkdirAll(sqlPath, 0755)
-		if errDir != nil {
-			panic("Failed to create database directory")
-		}
-	}
-	db, err := sqlx.Open("sqlite3", dsn.Path)
+	localStorage := storage.NewLocalStorage(fmt.Sprintf("%s.%s", consts.ProjectName, consts.DatabaseDriver))
+	db, err := sqlx.Open(consts.DatabaseDriver, localStorage.Path)
 	if err != nil {
 		panic(err)
 	}
-	_, err = os.Stat(dsn.Path)
-	if !os.IsNotExist(err) {
+	if localStorage.DatabaseExist() {
 		return db
 	}
 	createTables(db)
@@ -35,11 +23,10 @@ func NewDatabase() *sqlx.DB {
 
 //goland:noinspection SqlNoDataSourceInspection
 func createTables(db *sqlx.DB) {
-	// 创建服务器表
 	const serversTables = `
 		CREATE TABLE servers (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			ip TEXT NOT NULL,
+			host TEXT NOT NULL,
 			port INTEGER NOT NULL,
 			username TEXT NOT NULL,
 			password TEXT NOT NULL,
@@ -54,13 +41,18 @@ func createTables(db *sqlx.DB) {
 			name TEXT NOT NULL
 		);`
 
-	tables := []string{serversTables, nodesTables}
+	const preferencesTables = `
+		CREATE TABLE preferences (
+    		id INTEGER PRIMARY KEY AUTOINCREMENT,
+    		theme TEXT NOT NULL DEFAULT 'auto' CHECK(theme IN ('auto','light','dark')),
+    		language TEXT NOT NULL DEFAULT 'auto' CHECK(theme IN ('auto','chinese','english')),
+    		auto_check_update BOOLEAN DEFAULT 1
+		);`
 
+	tables := []string{serversTables, nodesTables, preferencesTables}
 	for _, table := range tables {
-		_, err := db.Exec(table)
-		if err != nil {
+		if _, err := db.Exec(table); err != nil {
 			panic(err)
 		}
 	}
-
 }
