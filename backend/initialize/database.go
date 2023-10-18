@@ -3,7 +3,7 @@ package initialize
 import (
 	"fmt"
 	"github.com/DLinkProjects/DLink/backend/consts"
-	"github.com/DLinkProjects/DLink/backend/utils/storage"
+	"github.com/DLinkProjects/DLink/backend/pkg/storage"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )

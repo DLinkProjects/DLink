@@ -9,6 +9,7 @@ export default function Dashboard() {
   const { t } = useTranslation();
 
   const containerStatusOption = {
+    // backgroundColor: '#16161A',
     title: {
       text: 'Container Status',
       left: 'center',
@@ -43,39 +44,7 @@ export default function Dashboard() {
     ],
   };
 
-  // const networkFlowOption = {
-  //   title: {
-  //     text: 'Network Flow',
-  //     left: 'center',
-  //   },
-  //   tooltip: {
-  //     trigger: 'item',
-  //     extraCssText: 'box-shadow:none;',
-  //   },
-  //   xAxis: {
-  //     type: 'category',
-  //     boundaryGap: false,
-  //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  //   },
-  //   yAxis: {
-  //     type: 'value',
-  //   },
-  //   series: [
-  //     {
-  //       data: [120, 132, 101, 34, 290, 330, 320],
-  //       type: 'line',
-  //       areaStyle: {},
-  //     },
-  //     {
-  //       data: [120, 232, 201, 134, 190, 130, 132],
-  //       type: 'line',
-  //       areaStyle: {},
-  //     },
-  //   ],
-  // };
-
   const containerStatusRef = useRef<EChartsInstance>();
-  // const networkFlowRef = useRef<EChartsInstance>();
   const chartRef2 = useRef<EChartsInstance>();
 
   const body = document.body;
@@ -83,9 +52,10 @@ export default function Dashboard() {
   const [chartTheme, setChartTheme] = useState(body.hasAttribute('theme-mode') ? 'dark' : 'light');
 
   useEffect(() => {
+    // if (chartTheme === 'dark') containerStatusOption.backgroundColor = '#16161A';
+
     const handleResize = throttle(() => {
       if (containerStatusRef.current) containerStatusRef.current.resize();
-      // if (networkFlowRef.current) networkFlowRef.current.resize();
       if (chartRef2.current) chartRef2.current.resize();
     }, 100);
 
@@ -146,12 +116,6 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
-
-      {/* <div className="gap-4 m-4">
-        <Card>
-          <ReactECharts theme={chartTheme} ref={networkFlowRef} option={networkFlowOption} />
-        </Card>
-      </div> */}
     </>
   );
 }

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/DLinkProjects/DLink/backend"
 	"github.com/DLinkProjects/DLink/backend/consts"
+	"github.com/DLinkProjects/DLink/backend/pkg/base"
 	"github.com/DLinkProjects/DLink/backend/services"
-	"github.com/DLinkProjects/DLink/backend/utils/base"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -24,7 +24,9 @@ var icon []byte
 
 func main() {
 	app := &backend.App{}
-	preference := services.NewPreferences()
+
+	preferencesSrv := services.NewPreferences()
+	serverSrv := services.NewServer()
 
 	err := wails.Run(&options.App{
 		Title:     consts.ProjectName,
@@ -32,7 +34,7 @@ func main() {
 		Height:    consts.DefaultWindowHeight,
 		MinWidth:  consts.DefaultWindowWidth,
 		MinHeight: consts.DefaultWindowHeight,
-		Frameless: preference.GetSysVersion() != "darwin",
+		Frameless: preferencesSrv.GetSysVersion() != "darwin",
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -40,7 +42,8 @@ func main() {
 		OnStartup:        app.Startup,
 		OnShutdown:       app.Shutdown,
 		Bind: []any{
-			preference,
+			preferencesSrv,
+			serverSrv,
 		},
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,
