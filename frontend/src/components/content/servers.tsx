@@ -1,4 +1,4 @@
-import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card } from '@douyinfe/semi-ui';
+import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card, Modal } from '@douyinfe/semi-ui';
 import {
   IconServer,
   IconDelete,
@@ -21,6 +21,21 @@ type FolderProps = {
   showIcon: boolean;
 };
 
+type AddServersProps = {
+  visible: boolean;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function AddServers({ visible, setVisible }: AddServersProps) {
+  return (
+    <Modal title="添加服务器" visible={visible} onCancel={() => setVisible(false)} closeOnEsc={true}>
+      This is the content of a basic modal.
+      <br />
+      More content...
+    </Modal>
+  );
+}
+
 export default function Servers() {
   const { Column } = Table;
   const { Paragraph, Text } = Typography;
@@ -28,11 +43,17 @@ export default function Servers() {
   const [serverValue, setServerValue] = useState('');
   const [folderStatus, setFolderStatus] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
     borderRight: '1px solid var(--semi-color-border)',
   };
+
+  const onOpenAddServers = () => {
+    setVisible(true);
+  };
+  const onOpenAddGroup = () => {};
 
   // MOCK
   const generateData = (count: number) => {
@@ -205,12 +226,18 @@ export default function Servers() {
           >
             <div className="flex ml-2">
               <Tooltip content={t('addNewConnection')}>
-                <div className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer">
+                <div
+                  onClick={onOpenAddServers}
+                  className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer"
+                >
                   <IconCopyAdd style={{ color: 'var(--semi-color-text-2)' }} size="large" />
                 </div>
               </Tooltip>
               <Tooltip content={t('addNewGroup')}>
-                <div className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer">
+                <div
+                  onClick={onOpenAddGroup}
+                  className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer"
+                >
                   <IconFolderOpen style={{ color: 'var(--semi-color-text-2)' }} size="large" />
                 </div>
               </Tooltip>
@@ -248,6 +275,7 @@ export default function Servers() {
           </div>
         )}
       </div>
+      <AddServers visible={visible} setVisible={setVisible} />
     </div>
   );
 }
