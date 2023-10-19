@@ -1,4 +1,18 @@
-import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card, Modal } from '@douyinfe/semi-ui';
+import {
+  Tree,
+  ButtonGroup,
+  Button,
+  Tooltip,
+  Empty,
+  Typography,
+  Table,
+  Card,
+  Modal,
+  Form,
+  Tabs,
+  TabPane,
+  Checkbox,
+} from '@douyinfe/semi-ui';
 import {
   IconServer,
   IconDelete,
@@ -27,11 +41,70 @@ type AddServersProps = {
 };
 
 function AddServers({ visible, setVisible }: AddServersProps) {
+  const { Option } = Form.Select;
+  const [sshKeyChoose, setSshKeyChoose] = useState(false);
   return (
-    <Modal title="添加服务器" visible={visible} onCancel={() => setVisible(false)} closeOnEsc={true}>
-      This is the content of a basic modal.
-      <br />
-      More content...
+    <Modal
+      preventScroll={false}
+      width={'600px'}
+      title="添加服务器"
+      visible={visible}
+      onCancel={() => setVisible(false)}
+      closeOnEsc={true}
+    >
+      <Tabs type="line">
+        <TabPane tab="常规配置" itemKey="1">
+          <Checkbox
+            checked={sshKeyChoose}
+            className="pt-2"
+            onChange={e => setSshKeyChoose((e.target as HTMLInputElement).checked)}
+            aria-label="ssh key"
+          >
+            使用 SSH 秘钥登录
+          </Checkbox>
+          <Form>
+            <Form.Input className="w-full" field="linkName" label="链接名" placeholder="输入备注或者名称" />
+            <Form.Select className="w-full" field="role" label="分组" placeholder="请选择分组"></Form.Select>
+            <div className="flex flex-row justify-between">
+              <div className="basis-3/4">
+                <Form.Input field="time" label="服务器地址" placeholder="服务器地址" />
+              </div>
+              <div>
+                <p className="ml-2 mr-2 mt-10">:</p>
+              </div>
+              <div>
+                <Form.InputNumber
+                  className="mt-6"
+                  field="port"
+                  label="端口"
+                  noLabel={true}
+                  style={{ width: 176 }}
+                  initValue={22}
+                />
+              </div>
+            </div>
+            <Form.Input field="username" label="用户名" style={{ width: '100%' }} placeholder="请输入 SSH 用户名" />
+            {sshKeyChoose ? (
+              <Form.Select className="w-full" field="key" label={{ text: '秘钥', optional: true }}>
+                <Option value="admin">127.0.0.1</Option>
+                <Option value="user">192.168.1.1</Option>
+                <Option value="guest">192.168.0.1</Option>
+              </Form.Select>
+            ) : (
+              <Form.Input
+                field="password"
+                mode="password"
+                label="密码"
+                style={{ width: '100%' }}
+                placeholder="请输入 SSH 密码"
+              />
+            )}
+          </Form>
+        </TabPane>
+        <TabPane tab="高级配置" itemKey="2">
+          123
+        </TabPane>
+      </Tabs>
     </Modal>
   );
 }

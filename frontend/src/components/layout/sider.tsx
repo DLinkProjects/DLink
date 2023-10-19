@@ -9,6 +9,7 @@ import {
   IconSun,
   IconServer,
   IconInfoCircle,
+  IconKey,
 } from '@douyinfe/semi-icons';
 import { BrowserOpenURL } from '@wailsApp/runtime';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +40,7 @@ export default function Sider() {
     { itemKey: 'servers', text: servers, icon: <IconServer /> },
     { itemKey: 'container', text: container, icon: <IconAppCenter /> },
     { itemKey: 'log', text: log, icon: <IconHistory /> },
+    { itemKey: 'key', text: '秘钥管理', icon: <IconKey /> },
   ];
 
   const switchMode = () => {

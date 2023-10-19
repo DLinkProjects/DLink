@@ -65,7 +65,7 @@ export default function Preferences({ visible, setVisible }: PreferencesProps) {
 
   return (
     <>
-      <Modal title={t('preference')} visible={visible} header={header} footer={footer}>
+      <Modal preventScroll={false} title={t('preference')} visible={visible} header={header} footer={footer}>
         <div className="flex items-center justify-center h-full flex-col">
           <TreeSelect
             style={{ width: 300 }}

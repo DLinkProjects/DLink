@@ -6,5 +6,5 @@ type Servers struct {
 	Port     uint16 `db:"port"`
 	Username string `db:"username"`
 	Password string `db:"password"`
-	GID      uint   `db:"gid"`
+	NodeID   uint   `db:"node_id"`
 }

@@ -39,7 +39,14 @@ export default function About({ visible, setVisible }: AboutProps) {
   };
 
   return (
-    <Modal title={t('about')} onCancel={() => setVisible(false)} visible={visible} footer={footer} centered>
+    <Modal
+      preventScroll={false}
+      title={t('about')}
+      onCancel={() => setVisible(false)}
+      visible={visible}
+      footer={footer}
+      centered
+    >
       <div className="flex items-center justify-center h-full flex-col">
         <img src={logo} alt="logo" className="w-20 h-20" />
         <Title className="pt-6" heading={4}>

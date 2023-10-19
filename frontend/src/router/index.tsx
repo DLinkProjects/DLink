@@ -4,6 +4,7 @@ import Servers from '@/components/content/servers';
 import Container from '@/components/content/container';
 import Log from '@/components/content/log';
 import Dashboard from '@/components/content/dashboard';
+import Key from '@/components/content/key';
 
 const routers = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const routers = createBrowserRouter([
       {
         path: '/log',
         element: <Log />,
+      },
+      {
+        path: '/key',
+        element: <Key />,
       },
     ],
   },
