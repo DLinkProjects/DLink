@@ -12,12 +12,10 @@ func NewServer() *Server {
 }
 
 // CreateServer 添加服务器
-//
-//goland:noinspection SqlNoDataSourceInspection
-func (s *Server) CreateServer(data types.CreateServerReq) error {
+func (s *Server) CreateServer(r types.CreateServerReq) error {
 	result, err := global.Database.Exec(
 		"INSERT INTO nodes(parent_id, type, name) VALUES (?, ?, ?)",
-		data.ParentID, "server", data.LinkName,
+		r.ParentID, "server", r.LinkName,
 	)
 	if err != nil {
 		return err
@@ -30,14 +28,12 @@ func (s *Server) CreateServer(data types.CreateServerReq) error {
 
 	_, err = global.Database.Exec(
 		"INSERT INTO servers(host, port, username, password, node_id) VALUES (?, ?, ?, ?, ?)",
-		data.Host, data.Port, data.Username, data.Password, nodeId,
+		r.Host, r.Port, r.Username, r.Password, nodeId,
 	)
 	return err
 }
 
 // GetServerCount 统计服务器总数量
-//
-//goland:noinspection SqlNoDataSourceInspection
 func (s *Server) GetServerCount() (count uint, err error) {
 	err = global.Database.Get(&count, "SELECT COUNT(*) FROM servers")
 	return
