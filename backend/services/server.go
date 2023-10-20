@@ -14,19 +14,22 @@ func NewServer() *Server {
 }
 
 // CreateServer 添加服务器
-func (s *Server) CreateServer(data types.ServerReq) error {
-	sqlStr := "INSERT INTO nodes(parent_id, type, name) VALUES (?, ?, ?)"
-	result, err := global.Database.Exec(sqlStr, data.NodeID, "server", data.LinkName)
+func (s *Server) CreateServer(r types.CreateServerReq) error {
+	result, err := global.Database.Exec(
+		"INSERT INTO nodes(parent_id, type, name) VALUES (?, ?, ?)",
+		r.NodeID, "server", r.LinkName,
+	)
 	if err != nil {
 		return err
 	}
-
 	nodeId, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
-	sqlStr = "INSERT INTO servers(host, port, username, password, node_id) VALUES (?, ?, ?, ?, ?)"
-	_, err = global.Database.Exec(sqlStr, data.Host, data.Port, data.Username, data.Password, nodeId)
+	_, err = global.Database.Exec(
+		"INSERT INTO servers(host, port, username, password, node_id) VALUES (?, ?, ?, ?, ?)",
+		r.Host, r.Port, r.Username, r.Password, nodeId,
+	)
 	return err
 }
 

@@ -24,7 +24,6 @@ func NewDatabase() *sqlx.DB {
 	return db
 }
 
-//goland:noinspection SqlNoDataSourceInspection
 func createTables(db *sqlx.DB) {
 	const serversTables = `
 		CREATE TABLE servers (

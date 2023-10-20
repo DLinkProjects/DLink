@@ -2,7 +2,7 @@ package types
 
 import "github.com/DLinkProjects/DLink/backend/entity"
 
-type ServerReq struct {
+type CreateServerReq struct {
 	LinkName string `json:"link_name"`
 	NodeID   uint   `json:"node_id"`
 	Host     string `json:"host"`

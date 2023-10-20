@@ -169,7 +169,7 @@ function AddServers({ visible, setVisible, onGetServers }: AddServersProps) {
               placeholder="请输入 SSH 用户名"
             />
             {sshKeyChoose ? (
-              <Form.Select className="w-full" field="key" label="秘钥" placeholder="请选择秘钥">
+              <Form.Select className="w-full" field="key" label="秘钥" placeholder="请选择 SSH 秘钥">
                 <Option value="admin">127.0.0.1</Option>
                 <Option value="user">192.168.1.1</Option>
                 <Option value="guest">192.168.0.1</Option>
@@ -241,7 +241,7 @@ export default function Servers() {
   }, []);
 
   // MOCK
-  const generatetableData = () => {
+  const generateTableData = () => {
     const tableData = [];
     for (let i = 1; i <= 20; i++) {
       tableData.push({
@@ -255,7 +255,7 @@ export default function Servers() {
     }
     return tableData;
   };
-  const tableData = generatetableData();
+  const tableData = generateTableData();
 
   const Folder: React.FC<FolderProps> = ({ showIcon }) => {
     if (showIcon) {
@@ -264,10 +264,10 @@ export default function Servers() {
     return <IconFolder />;
   };
 
-  const Action: React.FC<any> = ({ serverValue, setServerValue }) => {
+  const Action: React.FC<any> = ({ serverValue, setServerValue, isLeaf }) => {
     return (
       <ButtonGroup size="small" theme="borderless">
-        <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />
+        {isLeaf && <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />}
         <Button icon={<IconEdit />} />
         <Button type="danger" icon={<IconDelete />} />
       </ButtonGroup>
@@ -340,7 +340,7 @@ export default function Servers() {
 
         {label === selectedLabel && (
           <div>
-            <Action serverValue={label} setServerValue={setServerValue} />
+            <Action serverValue={label} setServerValue={setServerValue} isLeaf={isLeaf} />
           </div>
         )}
       </li>
