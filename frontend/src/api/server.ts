@@ -2,7 +2,7 @@ import { CreateGroups, CreateServer, GetGroups, GetServers } from '@wailsApp/go/
 import { types } from '@wailsApp/go/models';
 import toast from 'react-hot-toast';
 
-export async function createServer(data: types.ServerReq): Promise<void> {
+export async function createServer(data: types.CreateServerReq): Promise<void> {
   try {
     await CreateServer(data);
     toast.success('添加新服务器成功');

@@ -83,12 +83,12 @@ function AddGroups({ visible, setVisible, onGetServers }: AddGroupsProps) {
 
 function AddServers({ visible, setVisible, onGetServers }: AddServersProps) {
   const { Option } = Form.Select;
-  const initialServerData: types.ServerReq = new types.ServerReq();
+  const initialServerData: types.CreateServerReq = new types.CreateServerReq();
   const [sshKeyChoose, setSshKeyChoose] = useState(false);
-  const [serverData, setServerData] = useState<types.ServerReq>(initialServerData);
+  const [serverData, setServerData] = useState<types.CreateServerReq>(initialServerData);
   const [groupsSelect, setGroupsSelect] = useState<entity.Node[]>([]);
 
-  const onCreateServer = (data: types.ServerReq) => {
+  const onCreateServer = (data: types.CreateServerReq) => {
     console.log(data);
     createServer(data).then(() => {
       setServerData(initialServerData);
