@@ -85,7 +85,12 @@ function AddServers({ visible, setVisible }: AddServersProps) {
             </div>
             <Form.Input field="username" label="用户名" style={{ width: '100%' }} placeholder="请输入 SSH 用户名" />
             {sshKeyChoose ? (
-              <Form.Select className="w-full" field="key" label={{ text: '秘钥', optional: false }} placeholder="请选择 SSH 秘钥">
+              <Form.Select
+                className="w-full"
+                field="key"
+                label={{ text: '秘钥', optional: false }}
+                placeholder="请选择 SSH 秘钥"
+              >
                 <Option value="admin">127.0.0.1</Option>
                 <Option value="user">192.168.1.1</Option>
                 <Option value="guest">192.168.0.1</Option>
@@ -183,10 +188,10 @@ export default function Servers() {
     return <IconFolder />;
   };
 
-  const Action: React.FC<any> = ({ serverValue, setServerValue }) => {
+  const Action: React.FC<any> = ({ serverValue, setServerValue, isLeaf }) => {
     return (
       <ButtonGroup size="small" theme="borderless">
-        <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />
+        {isLeaf && <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />}
         <Button icon={<IconEdit />} />
         <Button type="danger" icon={<IconDelete />} />
       </ButtonGroup>
@@ -262,7 +267,7 @@ export default function Servers() {
 
         {label === selectedLabel && (
           <div>
-            <Action serverValue={label} setServerValue={setServerValue} />
+            <Action serverValue={label} setServerValue={setServerValue} isLeaf={isLeaf} />
           </div>
         )}
       </li>
