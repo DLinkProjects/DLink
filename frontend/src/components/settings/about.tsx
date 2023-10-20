@@ -29,13 +29,7 @@ export default function About({ visible, setVisible }: AboutProps) {
   };
 
   const onCheckUpdate = () => {
-    toast.success('当前是最新版本！', {
-      style: {
-        borderRadius: '8px',
-        background: 'var(--semi-color-bg-1)',
-        color: 'var(--semi-color-text-0)',
-      },
-    });
+    toast.success('当前是最新版本！');
   };
 
   return (
@@ -82,7 +76,17 @@ export default function About({ visible, setVisible }: AboutProps) {
           Copyright © 2023 DLinkProjects All rights reserved
         </Text>
       </div>
-      <Toaster position="bottom-right" reverseOrder={false} />
+      <Toaster
+        position="bottom-right"
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            borderRadius: '8px',
+            background: 'var(--semi-color-bg-1)',
+            color: 'var(--semi-color-text-0)',
+          },
+        }}
+      />
     </Modal>
   );
 }

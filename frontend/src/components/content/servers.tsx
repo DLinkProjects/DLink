@@ -12,6 +12,7 @@ import {
   Tabs,
   TabPane,
   Checkbox,
+  Input,
 } from '@douyinfe/semi-ui';
 import {
   IconServer,
@@ -25,11 +26,13 @@ import {
   IconTick,
   IconLink,
 } from '@douyinfe/semi-icons';
-import React, { useState } from 'react';
-import { RenderFullLabelProps } from '@douyinfe/semi-ui/lib/es/tree';
+import React, { useEffect, useState } from 'react';
+import { RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
 import { useTranslation } from 'react-i18next';
+import { entity, types } from '@wailsApp/go/models';
+import { createServer, createGroup, getGroups, getServers } from '@/api/server';
 
 type FolderProps = {
   showIcon: boolean;
@@ -38,11 +41,70 @@ type FolderProps = {
 type AddServersProps = {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  onGetServers: () => void;
 };
 
-function AddServers({ visible, setVisible }: AddServersProps) {
+type AddGroupsProps = {
+  visible: boolean;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  onGetServers: () => void;
+};
+
+function AddGroups({ visible, setVisible, onGetServers }: AddGroupsProps) {
+  const [groupData, setGroupData] = useState('');
+
+  const onCreateGroup = () => {
+    const req = new types.GroupReq();
+    req.name = groupData;
+    req.type = 'group';
+    req.parent_id = 0;
+    createGroup(req).then(() => {
+      setVisible(false);
+      setGroupData('');
+      onGetServers();
+    });
+  };
+
+  return (
+    <Modal
+      preventScroll={false}
+      width={'600px'}
+      title="添加新分组"
+      visible={visible}
+      onCancel={() => setVisible(false)}
+      closeOnEsc={true}
+      centered
+      onOk={onCreateGroup}
+    >
+      <Input placeholder={'分组名称'} value={groupData} onChange={setGroupData}></Input>
+    </Modal>
+  );
+}
+
+function AddServers({ visible, setVisible, onGetServers }: AddServersProps) {
   const { Option } = Form.Select;
+  const initialServerData: types.ServerReq = new types.ServerReq();
   const [sshKeyChoose, setSshKeyChoose] = useState(false);
+  const [serverData, setServerData] = useState<types.ServerReq>(initialServerData);
+  const [groupsSelect, setGroupsSelect] = useState<entity.Node[]>([]);
+
+  const onCreateServer = (data: types.ServerReq) => {
+    console.log(data);
+    createServer(data).then(() => {
+      setServerData(initialServerData);
+      setVisible(false);
+      onGetServers();
+    });
+  };
+
+  useEffect(() => {
+    if (visible) {
+      getGroups().then(res => {
+        setGroupsSelect(res.groups || []);
+      });
+    }
+  }, [visible]);
+
   return (
     <Modal
       preventScroll={false}
@@ -51,6 +113,8 @@ function AddServers({ visible, setVisible }: AddServersProps) {
       visible={visible}
       onCancel={() => setVisible(false)}
       closeOnEsc={true}
+      onOk={() => onCreateServer(serverData)}
+      centered
     >
       <Tabs type="line">
         <TabPane tab="常规配置" itemKey="1">
@@ -62,12 +126,27 @@ function AddServers({ visible, setVisible }: AddServersProps) {
           >
             使用 SSH 秘钥登录
           </Checkbox>
-          <Form>
-            <Form.Input className="w-full" field="linkName" label="链接名" placeholder="输入备注或者名称" />
-            <Form.Select className="w-full" field="role" label="分组" placeholder="请选择分组"></Form.Select>
+          <Form onValueChange={values => setServerData(values.serverData)}>
+            <Form.Input className="w-full" field="serverData.link_name" label="链接名" placeholder="输入备注或者名称" />
+            <Form.Select
+              className="w-full"
+              field="serverData.node_id"
+              label="分组"
+              placeholder="请选择分组"
+              initValue={0}
+            >
+              <Option key={0} value={0}>
+                不分组
+              </Option>
+              {groupsSelect.map((item: entity.Node) => (
+                <Option key={item.id} value={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+            </Form.Select>
             <div className="flex flex-row justify-between">
               <div className="basis-3/4">
-                <Form.Input field="time" label="服务器地址" placeholder="服务器地址" />
+                <Form.Input field="serverData.host" label="服务器地址" placeholder="服务器地址" />
               </div>
               <div>
                 <p className="ml-2 mr-2 mt-10">:</p>
@@ -75,7 +154,7 @@ function AddServers({ visible, setVisible }: AddServersProps) {
               <div>
                 <Form.InputNumber
                   className="mt-6"
-                  field="port"
+                  field="serverData.port"
                   label="端口"
                   noLabel={true}
                   style={{ width: 176 }}
@@ -83,16 +162,21 @@ function AddServers({ visible, setVisible }: AddServersProps) {
                 />
               </div>
             </div>
-            <Form.Input field="username" label="用户名" style={{ width: '100%' }} placeholder="请输入 SSH 用户名" />
+            <Form.Input
+              field="serverData.username"
+              label="用户名"
+              style={{ width: '100%' }}
+              placeholder="请输入 SSH 用户名"
+            />
             {sshKeyChoose ? (
-              <Form.Select className="w-full" field="key" label={{ text: '秘钥', optional: true }}>
+              <Form.Select className="w-full" field="key" label="秘钥" placeholder="请选择秘钥">
                 <Option value="admin">127.0.0.1</Option>
                 <Option value="user">192.168.1.1</Option>
                 <Option value="guest">192.168.0.1</Option>
               </Form.Select>
             ) : (
               <Form.Input
-                field="password"
+                field="serverData.password"
                 mode="password"
                 label="密码"
                 style={{ width: '100%' }}
@@ -116,7 +200,9 @@ export default function Servers() {
   const [serverValue, setServerValue] = useState('');
   const [folderStatus, setFolderStatus] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [addServerVisible, setAddServerVisible] = useState(false);
+  const [addGroupVisible, setAddGroupVisible] = useState(false);
+  const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>([]);
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
@@ -124,40 +210,35 @@ export default function Servers() {
   };
 
   const onOpenAddServers = () => {
-    setVisible(true);
+    setAddServerVisible(true);
   };
-  const onOpenAddGroup = () => {};
+  const onOpenAddGroup = () => {
+    setAddGroupVisible(true);
+  };
 
-  // MOCK
-  const generateData = (count: number) => {
-    const data = [];
-    for (let i = 0; i < count; i++) {
-      const ipParts = ['127', '0', '0', i + 1];
-      const ip = ipParts.join('.');
-      if (i === 0) {
-        data.push({
-          label: 'localhost',
-          value: 'localhost',
-          key: `${i}`,
-          children: [
-            {
-              label: '192.168.1.1',
-              value: '192.168.1.1',
-              key: '0-0-1',
-            },
-          ],
-        });
-      } else {
-        data.push({
-          label: ip,
-          value: ip,
-          key: `${i}`,
-        });
-      }
-    }
-    return data;
+  const onGetServers = () => {
+    getServers().then(response => {
+      const findChildren = (parentId: number): TreeNodeData[] => {
+        return (response.nodes || [])
+          .filter(item => item.parent_id === parentId)
+          .map(item => {
+            const children = findChildren(item.id);
+            return {
+              key: item.id.toString(),
+              label: item.name,
+              children: children.length > 0 ? children : undefined,
+            };
+          });
+      };
+      // 从根节点 (parent_id === 0) 开始构建
+      const transformedData = findChildren(0);
+      setTreeData(transformedData);
+    });
   };
-  const data = generateData(10);
+
+  useEffect(() => {
+    onGetServers();
+  }, []);
 
   // MOCK
   const generatetableData = () => {
@@ -238,9 +319,6 @@ export default function Servers() {
       <li
         role="tree"
         className={`${className} flex justify-between h-[30px]`}
-        onDoubleClick={() => {
-          setServerValue(label?.toString() || '');
-        }}
         onClick={v => {
           onCheck(v);
           setSelectedLabel(label?.toString() || null);
@@ -283,10 +361,11 @@ export default function Servers() {
       >
         <div className="flex flex-col h-full">
           <Tree
-            // draggable
+            draggable
+            onDrop={v => console.log(v)}
             className="flex-grow h-0"
             expandAll={false}
-            treeData={data}
+            treeData={treeData}
             filterTreeNode
             showClear
             showFilteredOnly={true}
@@ -348,7 +427,8 @@ export default function Servers() {
           </div>
         )}
       </div>
-      <AddServers visible={visible} setVisible={setVisible} />
+      <AddServers visible={addServerVisible} setVisible={setAddServerVisible} onGetServers={onGetServers} />
+      <AddGroups visible={addGroupVisible} setVisible={setAddGroupVisible} onGetServers={onGetServers} />
     </div>
   );
 }
