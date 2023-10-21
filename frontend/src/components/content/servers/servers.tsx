@@ -52,7 +52,7 @@ export default function Servers() {
           .map(item => {
             const children = findChildren(item.id);
             return {
-              key: item.key.toString(),
+              key: item.key.Int64.toString(),
               label: item.name,
               children: children.length > 0 ? children : undefined,
               parentId: item.parent_id,
@@ -63,6 +63,7 @@ export default function Servers() {
       // 从根节点 (parent_id === 0) 开始构建
       const transformedData = findChildren(0);
       setTreeData(transformedData);
+      console.log(treeData);
     });
   };
 

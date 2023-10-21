@@ -26,6 +26,15 @@ func (s *Server) CreateServer(r types.CreateServerReq) error {
 	if err != nil {
 		return err
 	}
+
+	_, err = global.Database.Exec(
+		"UPDATE nodes SET key = ? where id = ?", nodeId, nodeId,
+	)
+
+	if err != nil {
+		return err
+	}
+
 	_, err = global.Database.Exec(
 		"INSERT INTO servers(host, port, username, password, node_id) VALUES (?, ?, ?, ?, ?)",
 		r.Host, r.Port, r.Username, r.Password, nodeId,
@@ -49,7 +58,19 @@ func (s *Server) CreateGroups(data types.GroupReq) error {
 	if data.Name == "" {
 		return errors.New("name cannot be empty")
 	}
-	_, err := global.Database.Exec(sqlStr, data.ParentID, data.Type, data.Name)
+	result, err := global.Database.Exec(sqlStr, data.ParentID, data.Type, data.Name)
+	if err != nil {
+		return err
+	}
+
+	nodeId, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	_, err = global.Database.Exec(
+		"UPDATE nodes SET key = ? where id = ?", nodeId, nodeId,
+	)
 	return err
 }
 
