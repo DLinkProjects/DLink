@@ -1,19 +1,4 @@
-import {
-  Tree,
-  ButtonGroup,
-  Button,
-  Tooltip,
-  Empty,
-  Typography,
-  Table,
-  Card,
-  Modal,
-  Form,
-  Tabs,
-  TabPane,
-  Checkbox,
-  Input,
-} from '@douyinfe/semi-ui';
+import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card } from '@douyinfe/semi-ui';
 import {
   IconServer,
   IconDelete,
@@ -27,171 +12,17 @@ import {
   IconLink,
 } from '@douyinfe/semi-icons';
 import React, { useEffect, useState } from 'react';
-import { RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
+import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
 import { useTranslation } from 'react-i18next';
-import { entity, types } from '@wailsApp/go/models';
-import { createServer, createGroup, getGroups, getServers } from '@/api/server';
+import { getServers } from '@/api/server';
+import AddServer from '@/components/content/servers/addServer';
+import AddGroup from '@/components/content/servers/addGroup';
 
 type FolderProps = {
   showIcon: boolean;
 };
-
-type AddServersProps = {
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  onGetServers: () => void;
-};
-
-type AddGroupsProps = {
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  onGetServers: () => void;
-};
-
-function AddGroups({ visible, setVisible, onGetServers }: AddGroupsProps) {
-  const [groupData, setGroupData] = useState('');
-
-  const onCreateGroup = () => {
-    const req = new types.GroupReq();
-    req.name = groupData;
-    req.type = 'group';
-    req.parent_id = 0;
-    createGroup(req).then(() => {
-      setVisible(false);
-      setGroupData('');
-      onGetServers();
-    });
-  };
-
-  return (
-    <Modal
-      preventScroll={false}
-      width={'600px'}
-      title="添加新分组"
-      visible={visible}
-      onCancel={() => setVisible(false)}
-      closeOnEsc={true}
-      centered
-      onOk={onCreateGroup}
-    >
-      <Input placeholder={'分组名称'} value={groupData} onChange={setGroupData}></Input>
-    </Modal>
-  );
-}
-
-function AddServers({ visible, setVisible, onGetServers }: AddServersProps) {
-  const { Option } = Form.Select;
-  const initialServerData: types.CreateServerReq = new types.CreateServerReq();
-  const [sshKeyChoose, setSshKeyChoose] = useState(false);
-  const [serverData, setServerData] = useState<types.CreateServerReq>(initialServerData);
-  const [groupsSelect, setGroupsSelect] = useState<entity.Node[]>([]);
-
-  const onCreateServer = (data: types.CreateServerReq) => {
-    console.log(data);
-    createServer(data).then(() => {
-      setServerData(initialServerData);
-      setVisible(false);
-      onGetServers();
-    });
-  };
-
-  useEffect(() => {
-    if (visible) {
-      getGroups().then(res => {
-        setGroupsSelect(res.groups || []);
-      });
-    }
-  }, [visible]);
-
-  return (
-    <Modal
-      preventScroll={false}
-      width={'600px'}
-      title="添加服务器"
-      visible={visible}
-      onCancel={() => setVisible(false)}
-      closeOnEsc={true}
-      onOk={() => onCreateServer(serverData)}
-      centered
-    >
-      <Tabs type="line">
-        <TabPane tab="常规配置" itemKey="1">
-          <Checkbox
-            checked={sshKeyChoose}
-            className="pt-2"
-            onChange={e => setSshKeyChoose((e.target as HTMLInputElement).checked)}
-            aria-label="ssh key"
-          >
-            使用 SSH 秘钥登录
-          </Checkbox>
-          <Form onValueChange={values => setServerData(values.serverData)}>
-            <Form.Input className="w-full" field="serverData.link_name" label="链接名" placeholder="输入备注或者名称" />
-            <Form.Select
-              className="w-full"
-              field="serverData.node_id"
-              label="分组"
-              placeholder="请选择分组"
-              initValue={0}
-            >
-              <Option key={0} value={0}>
-                不分组
-              </Option>
-              {groupsSelect.map((item: entity.Node) => (
-                <Option key={item.id} value={item.id}>
-                  {item.name}
-                </Option>
-              ))}
-            </Form.Select>
-            <div className="flex flex-row justify-between">
-              <div className="basis-3/4">
-                <Form.Input field="serverData.host" label="服务器地址" placeholder="服务器地址" />
-              </div>
-              <div>
-                <p className="ml-2 mr-2 mt-10">:</p>
-              </div>
-              <div>
-                <Form.InputNumber
-                  className="mt-6"
-                  field="serverData.port"
-                  label="端口"
-                  noLabel={true}
-                  style={{ width: 176 }}
-                  initValue={22}
-                />
-              </div>
-            </div>
-            <Form.Input
-              field="serverData.username"
-              label="用户名"
-              style={{ width: '100%' }}
-              placeholder="请输入 SSH 用户名"
-            />
-            {sshKeyChoose ? (
-              <Form.Select className="w-full" field="key" label="秘钥" placeholder="请选择 SSH 秘钥">
-                <Option value="admin">127.0.0.1</Option>
-                <Option value="user">192.168.1.1</Option>
-                <Option value="guest">192.168.0.1</Option>
-              </Form.Select>
-            ) : (
-              <Form.Input
-                field="serverData.password"
-                mode="password"
-                label="密码"
-                style={{ width: '100%' }}
-                placeholder="请输入 SSH 密码"
-              />
-            )}
-          </Form>
-        </TabPane>
-        <TabPane tab="高级配置" itemKey="2">
-          123
-        </TabPane>
-      </Tabs>
-    </Modal>
-  );
-}
 
 export default function Servers() {
   const { Column } = Table;
@@ -227,6 +58,8 @@ export default function Servers() {
               key: item.id.toString(),
               label: item.name,
               children: children.length > 0 ? children : undefined,
+              parentId: item.parent_id,
+              type: item.type,
             };
           });
       };
@@ -264,10 +97,10 @@ export default function Servers() {
     return <IconFolder />;
   };
 
-  const Action: React.FC<any> = ({ serverValue, setServerValue, isLeaf }) => {
+  const Action: React.FC<any> = ({ serverValue, setServerValue, isFolder }) => {
     return (
       <ButtonGroup size="small" theme="borderless">
-        {isLeaf && <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />}
+        {isFolder && <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />}
         <Button icon={<IconEdit />} />
         <Button type="danger" icon={<IconDelete />} />
       </ButtonGroup>
@@ -313,7 +146,7 @@ export default function Servers() {
 
   const renderLabel = ({ data, className, onCheck, expandIcon }: RenderFullLabelProps) => {
     const { label } = data;
-    const isLeaf = !(data.children && data.children.length);
+    const isFolder = data.type !== 'group';
 
     return (
       <li
@@ -325,8 +158,8 @@ export default function Servers() {
         }}
       >
         <div className="flex items-center">
-          {isLeaf ? null : expandIcon}
-          {isLeaf ? (
+          {isFolder ? null : expandIcon}
+          {isFolder ? (
             <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
               {label === selectedLabel ? <IconServer style={{ color: 'var(--semi-color-info)' }} /> : <IconServer />}
             </div>
@@ -340,16 +173,19 @@ export default function Servers() {
 
         {label === selectedLabel && (
           <div>
-            <Action serverValue={label} setServerValue={setServerValue} isLeaf={isLeaf} />
+            <Action serverValue={label} setServerValue={setServerValue} isFolder={isFolder} />
           </div>
         )}
       </li>
     );
   };
 
+  const onDrop = (info: OnDragProps) => {
+    console.log(info);
+  };
+
   return (
     <div className="flex h-full overflow-hidden">
-      {/* <div className="flex-none w-80 h-full" style={serverListStyle}> */}
       <Resizable
         style={serverListStyle}
         defaultSize={{ width: 250, height: '100%' }}
@@ -362,7 +198,7 @@ export default function Servers() {
         <div className="flex flex-col h-full">
           <Tree
             draggable
-            onDrop={v => console.log(v)}
+            onDrop={onDrop}
             className="flex-grow h-0"
             expandAll={false}
             treeData={treeData}
@@ -370,7 +206,7 @@ export default function Servers() {
             showClear
             showFilteredOnly={true}
             renderFullLabel={renderLabel}
-            onExpand={() => setFolderStatus(!folderStatus)}
+            onExpand={(_, expanded) => setFolderStatus(expanded.expanded)}
           />
           <div
             className="flex flex-row h-12 flex-shrink-0 items-center justify-between"
@@ -427,8 +263,8 @@ export default function Servers() {
           </div>
         )}
       </div>
-      <AddServers visible={addServerVisible} setVisible={setAddServerVisible} onGetServers={onGetServers} />
-      <AddGroups visible={addGroupVisible} setVisible={setAddGroupVisible} onGetServers={onGetServers} />
+      <AddServer visible={addServerVisible} setVisible={setAddServerVisible} onGetServers={onGetServers} />
+      <AddGroup visible={addGroupVisible} setVisible={setAddGroupVisible} onGetServers={onGetServers} />
     </div>
   );
 }

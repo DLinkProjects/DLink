@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '@/App';
-import Servers from '@/components/content/servers';
+import Servers from '@/components/content/servers/servers';
 import Container from '@/components/content/container';
 import Log from '@/components/content/log';
 import Dashboard from '@/components/content/dashboard';
