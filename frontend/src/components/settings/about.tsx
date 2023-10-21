@@ -29,7 +29,7 @@ export default function About({ visible, setVisible }: AboutProps) {
   };
 
   const onCheckUpdate = () => {
-    toast.success('当前是最新版本！');
+    toast.success('当前是最新版本');
   };
 
   return (

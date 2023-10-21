@@ -19,10 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { getServers } from '@/api/server';
 import AddServer from '@/components/content/servers/addServer';
 import AddGroup from '@/components/content/servers/addGroup';
-
-type FolderProps = {
-  showIcon: boolean;
-};
+import toast from 'react-hot-toast';
 
 export default function Servers() {
   const { Column } = Table;
@@ -55,7 +52,7 @@ export default function Servers() {
           .map(item => {
             const children = findChildren(item.id);
             return {
-              key: item.id.toString(),
+              key: item.key.toString(),
               label: item.name,
               children: children.length > 0 ? children : undefined,
               parentId: item.parent_id,
@@ -71,6 +68,7 @@ export default function Servers() {
 
   useEffect(() => {
     onGetServers();
+    console.log(treeData);
   }, []);
 
   // MOCK
@@ -90,7 +88,7 @@ export default function Servers() {
   };
   const tableData = generateTableData();
 
-  const Folder: React.FC<FolderProps> = ({ showIcon }) => {
+  const Folder: React.FC<any> = ({ showIcon }) => {
     if (showIcon) {
       return <IconFolderOpen />;
     }
@@ -107,9 +105,6 @@ export default function Servers() {
     );
   };
 
-  // TODO 这里的类型定义有问题
-  // https://semi.design/zh-CN/show/table
-  // 定义每个列表格的类型的时候，需要定义render的类型，但是这里的类型定义有问题
   const TablesHash: React.FC<any> = ({ text }) => {
     return (
       <Paragraph
@@ -181,6 +176,75 @@ export default function Servers() {
   };
 
   const onDrop = (info: OnDragProps) => {
+    const { node, dropToGap, dragNode } = info;
+
+    // 如果当前节点的类型不是分组并且拖拽操作是需要把某个节点放入当前节点，然么就提示错误
+    if (node.type !== 'group' && !dropToGap) {
+      toast.error('当前节点不是分组，不能放入!');
+      return;
+    }
+
+    // 获取拖拽源节点和目标节点的 key
+    const dropKey = node.key;
+    const dragKey = dragNode.key;
+
+    const newData = JSON.parse(JSON.stringify(treeData));
+
+    interface FindNodeResult {
+      node: TreeNodeData;
+      index: number;
+      parent: TreeNodeData[];
+    }
+
+    const findNode = (key: string, data: TreeNodeData[]): FindNodeResult | undefined => {
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+        if (item.key === key) {
+          return { node: item, index: i, parent: data };
+        } else if (item.children) {
+          const result = findNode(key, item.children);
+          if (result) {
+            return result;
+          }
+        }
+      }
+      return undefined;
+    };
+    // 获取拖拽节点的信息
+    const dragResult = findNode(dragKey, newData);
+    if (!dragResult) return; // 如果找不到拖拽节点，直接返回
+
+    // 从原位置移除拖拽节点
+    dragResult.parent.splice(dragResult.index, 1);
+
+    if (dropToGap) {
+      // 如果拖放到了两个节点之间
+      const targetResult = findNode(dropKey, newData);
+      if (!targetResult) return;
+
+      if (dragNode.type === 'server' && targetResult.node.type === 'group') {
+        // 如果被拖拽的节点是 server，并且目标节点是 group，则插入到 group 前面
+        targetResult.parent.splice(targetResult.index, 0, dragResult.node);
+      } else if (targetResult.node.type === 'group') {
+        // 如果目标节点是 group，则将拖拽的节点作为其子节点
+        targetResult.node.children = targetResult.node.children || [];
+        targetResult.node.children.push(dragResult.node);
+      } else {
+        // 否则，插入到目标节点前面
+        targetResult.parent.splice(targetResult.index, 0, dragResult.node);
+      }
+    } else {
+      // 如果是拖放到了一个节点上，将节点添加到目标节点的子节点数组中
+      const targetResult = findNode(dropKey, newData);
+      if (!targetResult) return;
+
+      const targetNode = targetResult.node;
+      targetNode.children = targetNode.children || [];
+      targetNode.children.push(dragResult.node);
+    }
+
+    // 更新 state 中的 treeData
+    setTreeData(newData);
     console.log(info);
   };
 
