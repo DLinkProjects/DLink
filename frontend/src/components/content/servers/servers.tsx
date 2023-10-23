@@ -181,7 +181,7 @@ export default function Servers() {
   const onDrop = (info: OnDragProps) => {
     const { node, dropToGap, dragNode } = info;
 
-    // 如果当前节点的类型不是分组并且拖拽操作是需要把某个节点放入当前节点，然么就提示错误
+    // 如果当前节点的类型不是分组并且拖拽操作是需要把某个节点放入当前节点，那么就提示错误
     if (node.type !== 'group' && !dropToGap) {
       toast.error('当前节点不是分组，不能放入!');
       return;

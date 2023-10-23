@@ -23,7 +23,7 @@ export default function CreateGroupComponents({ visible, setVisible, onGetServer
         setVisible(false);
         setGroupData('');
         onGetServers();
-        toast.error('分组创建成功');
+        toast.success('分组创建成功');
       })
       .catch(e => {
         toast.error(`分组创建失败：${e}`);

@@ -24,7 +24,7 @@ export default function CreateServerComponentes({ visible, setVisible, onGetServ
         setServerData(initialServerData);
         setVisible(false);
         onGetServers();
-        toast.error('服务器添加成功');
+        toast.success('服务器添加成功');
       })
       .catch(e => {
         toast.error(`服务器添加失败：${e}`);
@@ -35,7 +35,7 @@ export default function CreateServerComponentes({ visible, setVisible, onGetServ
     setConnectLoading(true);
     await TestServerConnect(data)
       .then(() => {
-        toast.error('测试连接成功');
+        toast.success('测试连接成功');
       })
       .catch(e => {
         toast.error(`测试连接失败：${e}`);
