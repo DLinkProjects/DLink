@@ -45,11 +45,13 @@ export default function CreateServerComponentes({ visible, setVisible, onGetServ
 
   useEffect(() => {
     if (visible) {
-      GetGroups().then(nodes => {
-        setGroupsSelect(nodes || []);
-      }).catch(e => {
-        toast.error(e);
-      })
+      GetGroups()
+        .then(nodes => {
+          setGroupsSelect(nodes || []);
+        })
+        .catch(e => {
+          toast.error(e);
+        });
     }
   }, [visible]);
 

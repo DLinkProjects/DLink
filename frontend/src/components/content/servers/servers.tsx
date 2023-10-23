@@ -20,6 +20,7 @@ import CreateServerComponents from '@/components/content/servers/createServer';
 import { GetServers } from '@wailsApp/go/services/Server';
 import CreateGroupComponents from '@/components/content/servers/createGroup';
 import toast from 'react-hot-toast';
+import { Connect, GetContainerList } from '@wailsApp/go/services/Docker';
 
 export default function Servers() {
   const { Column } = Table;
@@ -70,8 +71,24 @@ export default function Servers() {
       });
   };
 
+  const onGetContainerList = async () => {
+    await Connect(4).catch(e => {
+      toast.error(`服务器连接失败：${e}`);
+      console.log(e);
+    });
+    await GetContainerList()
+      .then(nodes => {
+        console.log(nodes);
+      })
+      .catch(e => {
+        toast.error(`服务器列表获取失败：${e}`);
+      });
+  };
+
   useEffect(() => {
-    onGetServers();
+    onGetServers().catch(e => {
+      toast.error('服务器列表获取失败');
+    });
   }, []);
 
   // MOCK
@@ -101,7 +118,7 @@ export default function Servers() {
   const Action: React.FC<any> = ({ serverValue, setServerValue, isFolder }) => {
     return (
       <ButtonGroup size="small" theme="borderless">
-        {isFolder && <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />}
+        {isFolder && <Button icon={<IconLink />} onClick={onGetContainerList} />}
         <Button icon={<IconEdit />} />
         <Button type="danger" icon={<IconDelete />} />
       </ButtonGroup>
