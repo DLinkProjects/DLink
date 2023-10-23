@@ -35,6 +35,7 @@ export default function About({ visible, setVisible }: AboutProps) {
   return (
     <Modal
       preventScroll={false}
+      closeOnEsc={true}
       title={t('about')}
       onCancel={() => setVisible(false)}
       visible={visible}
@@ -76,17 +77,6 @@ export default function About({ visible, setVisible }: AboutProps) {
           Copyright © 2023 DLinkProjects All rights reserved
         </Text>
       </div>
-      <Toaster
-        position="bottom-right"
-        reverseOrder={false}
-        toastOptions={{
-          style: {
-            borderRadius: '8px',
-            background: 'var(--semi-color-bg-1)',
-            color: 'var(--semi-color-text-0)',
-          },
-        }}
-      />
     </Modal>
   );
 }

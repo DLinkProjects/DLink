@@ -9,6 +9,7 @@ export default function App() {
     <Trans>
       <Layout />
       <Toaster
+        position="bottom-right"
         reverseOrder={false}
         toastOptions={{
           style: {

@@ -44,16 +44,13 @@ export default function CreateServerComponentes({ visible, setVisible, onGetServ
   };
 
   useEffect(() => {
-    const getGroups = async () => {
-      await GetGroups()
-        .then(nodes => {
-          setGroupsSelect(nodes || []);
-        })
-        .catch(e => {
-          toast.error(e);
-        });
-    };
-    if (visible) getGroups;
+    if (visible) {
+      GetGroups().then(nodes => {
+        setGroupsSelect(nodes || []);
+      }).catch(e => {
+        toast.error(e);
+      })
+    }
   }, [visible]);
 
   return (
@@ -68,7 +65,7 @@ export default function CreateServerComponentes({ visible, setVisible, onGetServ
         <>
           <Button
             theme="solid"
-            type="secondary"
+            type="primary"
             className="float-left"
             onClick={() => onTestServerConnect(serverData)}
             loading={testConnectLoading}
