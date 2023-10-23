@@ -27,6 +27,7 @@ func main() {
 
 	preferencesSrv := services.NewPreferences()
 	serverSrv := services.NewServer()
+	dockerSrv := services.NewDocker(serverSrv)
 
 	err := wails.Run(&options.App{
 		Title:     consts.ProjectName,
@@ -44,6 +45,7 @@ func main() {
 		Bind: []any{
 			preferencesSrv,
 			serverSrv,
+			dockerSrv,
 		},
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,

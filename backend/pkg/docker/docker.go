@@ -50,6 +50,11 @@ func (a *Adapter) Connect() (*Adapter, error) {
 	return a, nil
 }
 
+// Close 关闭连接
+func (a *Adapter) Close() {
+	_ = a.cli.Close()
+}
+
 // Info 获取服务器端基础信息
 func (a *Adapter) Info() (*types.Info, error) {
 	info, err := a.cli.Info(a.ctx)
