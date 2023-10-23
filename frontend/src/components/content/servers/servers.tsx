@@ -1,18 +1,4 @@
-import {
-  Tree,
-  ButtonGroup,
-  Button,
-  Tooltip,
-  Empty,
-  Typography,
-  Table,
-  Card,
-  Modal,
-  Form,
-  Tabs,
-  TabPane,
-  Checkbox,
-} from '@douyinfe/semi-ui';
+import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card } from '@douyinfe/semi-ui';
 import {
   IconServer,
   IconDelete,
@@ -25,94 +11,15 @@ import {
   IconTick,
   IconLink,
 } from '@douyinfe/semi-icons';
-import React, { useState } from 'react';
-import { RenderFullLabelProps } from '@douyinfe/semi-ui/lib/es/tree';
+import React, { useEffect, useState } from 'react';
+import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
 import { useTranslation } from 'react-i18next';
-
-type FolderProps = {
-  showIcon: boolean;
-};
-
-type AddServersProps = {
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function AddServers({ visible, setVisible }: AddServersProps) {
-  const { Option } = Form.Select;
-  const [sshKeyChoose, setSshKeyChoose] = useState(false);
-  return (
-    <Modal
-      preventScroll={false}
-      width={'600px'}
-      title="添加服务器"
-      visible={visible}
-      onCancel={() => setVisible(false)}
-      closeOnEsc={true}
-    >
-      <Tabs type="line">
-        <TabPane tab="常规配置" itemKey="1">
-          <Checkbox
-            checked={sshKeyChoose}
-            className="pt-2"
-            onChange={e => setSshKeyChoose((e.target as HTMLInputElement).checked)}
-            aria-label="ssh key"
-          >
-            使用 SSH 秘钥登录
-          </Checkbox>
-          <Form>
-            <Form.Input className="w-full" field="linkName" label="链接名" placeholder="输入备注或者名称" />
-            <Form.Select className="w-full" field="role" label="分组" placeholder="请选择分组"></Form.Select>
-            <div className="flex flex-row justify-between">
-              <div className="basis-3/4">
-                <Form.Input field="time" label="服务器地址" placeholder="服务器地址" />
-              </div>
-              <div>
-                <p className="ml-2 mr-2 mt-10">:</p>
-              </div>
-              <div>
-                <Form.InputNumber
-                  className="mt-6"
-                  field="port"
-                  label="端口"
-                  noLabel={true}
-                  style={{ width: 176 }}
-                  initValue={22}
-                />
-              </div>
-            </div>
-            <Form.Input field="username" label="用户名" style={{ width: '100%' }} placeholder="请输入 SSH 用户名" />
-            {sshKeyChoose ? (
-              <Form.Select
-                className="w-full"
-                field="key"
-                label={{ text: '秘钥', optional: false }}
-                placeholder="请选择 SSH 秘钥"
-              >
-                <Option value="admin">127.0.0.1</Option>
-                <Option value="user">192.168.1.1</Option>
-                <Option value="guest">192.168.0.1</Option>
-              </Form.Select>
-            ) : (
-              <Form.Input
-                field="password"
-                mode="password"
-                label="密码"
-                style={{ width: '100%' }}
-                placeholder="请输入 SSH 密码"
-              />
-            )}
-          </Form>
-        </TabPane>
-        <TabPane tab="高级配置" itemKey="2">
-          123
-        </TabPane>
-      </Tabs>
-    </Modal>
-  );
-}
+import CreateServerComponents from '@/components/content/servers/createServer';
+import { GetServers } from '@wailsApp/go/services/Server';
+import CreateGroupComponents from '@/components/content/servers/createGroup';
+import toast from 'react-hot-toast';
 
 export default function Servers() {
   const { Column } = Table;
@@ -121,48 +28,51 @@ export default function Servers() {
   const [serverValue, setServerValue] = useState('');
   const [folderStatus, setFolderStatus] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [createServerVisible, setCreateServerVisible] = useState(false);
+  const [createGroupVisible, setCreateGroupVisible] = useState(false);
+  const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>([]);
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
     borderRight: '1px solid var(--semi-color-border)',
   };
 
-  const onOpenAddServers = () => {
-    setVisible(true);
+  const onOpenCreateServer = () => {
+    setCreateServerVisible(true);
   };
-  const onOpenAddGroup = () => {};
+  const onOpenCreateGroup = () => {
+    setCreateGroupVisible(true);
+  };
 
-  // MOCK
-  const generateData = (count: number) => {
-    const data = [];
-    for (let i = 0; i < count; i++) {
-      const ipParts = ['127', '0', '0', i + 1];
-      const ip = ipParts.join('.');
-      if (i === 0) {
-        data.push({
-          label: 'localhost',
-          value: 'localhost',
-          key: `${i}`,
-          children: [
-            {
-              label: '192.168.1.1',
-              value: '192.168.1.1',
-              key: '0-0-1',
-            },
-          ],
-        });
-      } else {
-        data.push({
-          label: ip,
-          value: ip,
-          key: `${i}`,
-        });
-      }
-    }
-    return data;
+  const onGetServers = async () => {
+    await GetServers()
+      .then(nodes => {
+        const findChildren = (parentId: number): TreeNodeData[] => {
+          return (nodes || [])
+            .filter(item => item.parent_id === parentId)
+            .map(item => {
+              const children = findChildren(item.id);
+              return {
+                key: item.key.Int64.toString(),
+                label: item.name,
+                children: children.length > 0 ? children : undefined,
+                parentId: item.parent_id,
+                type: item.type,
+              };
+            });
+        };
+        // 从根节点 (parent_id === 0) 开始构建
+        const transformedData = findChildren(0);
+        setTreeData(transformedData);
+      })
+      .catch(e => {
+        toast.error(`服务器列表获取失败：${e}`);
+      });
   };
-  const data = generateData(10);
+
+  useEffect(() => {
+    onGetServers();
+  }, []);
 
   // MOCK
   const generateTableData = () => {
@@ -181,26 +91,23 @@ export default function Servers() {
   };
   const tableData = generateTableData();
 
-  const Folder: React.FC<FolderProps> = ({ showIcon }) => {
+  const Folder: React.FC<any> = ({ showIcon }) => {
     if (showIcon) {
       return <IconFolderOpen />;
     }
     return <IconFolder />;
   };
 
-  const Action: React.FC<any> = ({ serverValue, setServerValue, isLeaf }) => {
+  const Action: React.FC<any> = ({ serverValue, setServerValue, isFolder }) => {
     return (
       <ButtonGroup size="small" theme="borderless">
-        {isLeaf && <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />}
+        {isFolder && <Button icon={<IconLink />} onClick={() => setServerValue(serverValue)} />}
         <Button icon={<IconEdit />} />
         <Button type="danger" icon={<IconDelete />} />
       </ButtonGroup>
     );
   };
 
-  // TODO 这里的类型定义有问题
-  // https://semi.design/zh-CN/show/table
-  // 定义每个列表格的类型的时候，需要定义render的类型，但是这里的类型定义有问题
   const TablesHash: React.FC<any> = ({ text }) => {
     return (
       <Paragraph
@@ -237,23 +144,20 @@ export default function Servers() {
 
   const renderLabel = ({ data, className, onCheck, expandIcon }: RenderFullLabelProps) => {
     const { label } = data;
-    const isLeaf = !(data.children && data.children.length);
+    const isFolder = data.type !== 'group';
 
     return (
       <li
         role="tree"
         className={`${className} flex justify-between h-[30px]`}
-        onDoubleClick={() => {
-          setServerValue(label?.toString() || '');
-        }}
         onClick={v => {
           onCheck(v);
           setSelectedLabel(label?.toString() || null);
         }}
       >
         <div className="flex items-center">
-          {isLeaf ? null : expandIcon}
-          {isLeaf ? (
+          {isFolder ? null : expandIcon}
+          {isFolder ? (
             <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
               {label === selectedLabel ? <IconServer style={{ color: 'var(--semi-color-info)' }} /> : <IconServer />}
             </div>
@@ -267,16 +171,88 @@ export default function Servers() {
 
         {label === selectedLabel && (
           <div>
-            <Action serverValue={label} setServerValue={setServerValue} isLeaf={isLeaf} />
+            <Action serverValue={label} setServerValue={setServerValue} isFolder={isFolder} />
           </div>
         )}
       </li>
     );
   };
 
+  const onDrop = (info: OnDragProps) => {
+    const { node, dropToGap, dragNode } = info;
+
+    // 如果当前节点的类型不是分组并且拖拽操作是需要把某个节点放入当前节点，然么就提示错误
+    if (node.type !== 'group' && !dropToGap) {
+      toast.error('当前节点不是分组，不能放入!');
+      return;
+    }
+
+    // 获取拖拽源节点和目标节点的 key
+    const dropKey = node.key;
+    const dragKey = dragNode.key;
+
+    const newData = JSON.parse(JSON.stringify(treeData));
+
+    interface FindNodeResult {
+      node: TreeNodeData;
+      index: number;
+      parent: TreeNodeData[];
+    }
+
+    const findNode = (key: string, data: TreeNodeData[]): FindNodeResult | undefined => {
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+        if (item.key === key) {
+          return { node: item, index: i, parent: data };
+        } else if (item.children) {
+          const result = findNode(key, item.children);
+          if (result) {
+            return result;
+          }
+        }
+      }
+      return undefined;
+    };
+    // 获取拖拽节点的信息
+    const dragResult = findNode(dragKey, newData);
+    if (!dragResult) return; // 如果找不到拖拽节点，直接返回
+
+    // 从原位置移除拖拽节点
+    dragResult.parent.splice(dragResult.index, 1);
+
+    if (dropToGap) {
+      // 如果拖放到了两个节点之间
+      const targetResult = findNode(dropKey, newData);
+      if (!targetResult) return;
+
+      if (dragNode.type === 'server' && targetResult.node.type === 'group') {
+        // 如果被拖拽的节点是 server，并且目标节点是 group，则插入到 group 前面
+        targetResult.parent.splice(targetResult.index, 0, dragResult.node);
+      } else if (targetResult.node.type === 'group') {
+        // 如果目标节点是 group，则将拖拽的节点作为其子节点
+        targetResult.node.children = targetResult.node.children || [];
+        targetResult.node.children.push(dragResult.node);
+      } else {
+        // 否则，插入到目标节点前面
+        targetResult.parent.splice(targetResult.index, 0, dragResult.node);
+      }
+    } else {
+      // 如果是拖放到了一个节点上，将节点添加到目标节点的子节点数组中
+      const targetResult = findNode(dropKey, newData);
+      if (!targetResult) return;
+
+      const targetNode = targetResult.node;
+      targetNode.children = targetNode.children || [];
+      targetNode.children.push(dragResult.node);
+    }
+
+    // 更新 state 中的 treeData
+    setTreeData(newData);
+    console.log(info);
+  };
+
   return (
     <div className="flex h-full overflow-hidden">
-      {/* <div className="flex-none w-80 h-full" style={serverListStyle}> */}
       <Resizable
         style={serverListStyle}
         defaultSize={{ width: 250, height: '100%' }}
@@ -288,15 +264,16 @@ export default function Servers() {
       >
         <div className="flex flex-col h-full">
           <Tree
-            // draggable
+            draggable
+            onDrop={onDrop}
             className="flex-grow h-0"
             expandAll={false}
-            treeData={data}
+            treeData={treeData}
             filterTreeNode
             showClear
             showFilteredOnly={true}
             renderFullLabel={renderLabel}
-            onExpand={() => setFolderStatus(!folderStatus)}
+            onExpand={(_, expanded) => setFolderStatus(expanded.expanded)}
           />
           <div
             className="flex flex-row h-12 flex-shrink-0 items-center justify-between"
@@ -305,7 +282,7 @@ export default function Servers() {
             <div className="flex ml-2">
               <Tooltip content={t('addNewConnection')}>
                 <div
-                  onClick={onOpenAddServers}
+                  onClick={onOpenCreateServer}
                   className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer"
                 >
                   <IconCopyAdd style={{ color: 'var(--semi-color-text-2)' }} size="large" />
@@ -313,7 +290,7 @@ export default function Servers() {
               </Tooltip>
               <Tooltip content={t('addNewGroup')}>
                 <div
-                  onClick={onOpenAddGroup}
+                  onClick={onOpenCreateGroup}
                   className="w-11 h-9 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer"
                 >
                   <IconFolderOpen style={{ color: 'var(--semi-color-text-2)' }} size="large" />
@@ -353,7 +330,16 @@ export default function Servers() {
           </div>
         )}
       </div>
-      <AddServers visible={visible} setVisible={setVisible} />
+      <CreateServerComponents
+        visible={createServerVisible}
+        setVisible={setCreateServerVisible}
+        onGetServers={onGetServers}
+      />
+      <CreateGroupComponents
+        visible={createGroupVisible}
+        setVisible={setCreateGroupVisible}
+        onGetServers={onGetServers}
+      />
     </div>
   );
 }

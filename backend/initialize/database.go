@@ -40,7 +40,8 @@ func createTables(db *sqlx.DB) {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			parent_id INTEGER,
 			type TEXT NOT NULL CHECK(type IN ('server', 'group')),
-			name TEXT NOT NULL
+			key INTEGER NULL,
+			name TEXT NOT NULL UNIQUE
 		);`
 
 	const preferencesTables = `

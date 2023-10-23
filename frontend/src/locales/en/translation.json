@@ -10,7 +10,7 @@
   "addNewConnection": "Add New Connection",
   "addNewGroup": "Add New Group",
   "haveNothing": "Have Nothing",
-  "noServers": "No server is currently selected. Double-click the server in the list or click the 'Connect' button to connect to the server.",
+  "noServers": "No server is currently selected, click the Connect button to connect to the server",
   "functionsUnderConstruction": "Functions Under Construction",
   "notYetOpen": "Not Yet Open",
   "preference": "Preference",
