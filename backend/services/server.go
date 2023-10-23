@@ -2,7 +2,9 @@ package services
 
 import (
 	"github.com/DLinkProjects/DLink/backend/global"
+	"github.com/DLinkProjects/DLink/backend/pkg/ssh"
 	"github.com/DLinkProjects/DLink/backend/types"
+	"strings"
 )
 
 type Server struct{}
@@ -37,4 +39,25 @@ func (s *Server) CreateServer(r types.CreateServerReq) error {
 func (s *Server) GetServerCount() (count uint, err error) {
 	err = global.Database.Get(&count, "SELECT COUNT(*) FROM servers")
 	return
+}
+
+// TestServerConnect 测试服务器连接
+func (s *Server) TestServerConnect(r types.CreateServerReq) error {
+	conf := &ssh.Config{
+		AuthType:           ssh.PassAuth,
+		Host:               r.Host,
+		Port:               r.Port,
+		User:               r.Username,
+		Password:           r.Password,
+		PrivateKey:         r.PrivateKey,
+		PrivateKeyPassword: r.PrivateKeyPassword,
+	}
+	// 如果连接密码为空则切换至私钥认证模式
+	if strings.TrimSpace(r.Password) == "" {
+		conf.AuthType = ssh.KeyAuth
+	}
+	if _, err := ssh.NewSSH(conf).Connect(); err != nil {
+		return err
+	}
+	return nil
 }

@@ -18,7 +18,7 @@ const (
 
 type Config struct {
 	AuthType           AuthTypeSSH
-	Port               uint
+	Port               uint16
 	Host               string
 	User               string
 	Password           string
