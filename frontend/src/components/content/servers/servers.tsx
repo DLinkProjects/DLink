@@ -255,19 +255,19 @@ export default function Servers() {
   };
 
   // TODO: 需要去获取窗口的大小
-  const scroll = { y: 200 };
+  const scroll = { y: 100 };
   const virtualized = {
     // TODO: 无限滚动的实现
     itemSize: 56,
-    // onScroll: ({ scrollDirection, scrollOffset, scrollUpdateWasRequested }: any) => {
-    //   if (
-    //     scrollDirection === 'forward' &&
-    //     scrollOffset >= (imagesTableData.length - Math.ceil(scroll.y / 56) * 1.5) * 56 &&
-    //     !scrollUpdateWasRequested
-    //   ) {
-    //     onGetImagesList();
-    //   }
-    // },
+    onScroll: ({ scrollDirection, scrollOffset, scrollUpdateWasRequested }: any) => {
+      if (
+        scrollDirection === 'forward' &&
+        scrollOffset >= (imagesTableData.length - Math.ceil(scroll.y / 56) * 1.5) * 56 &&
+        !scrollUpdateWasRequested
+      ) {
+        onGetImagesList();
+      }
+    },
   };
 
   // Table 列渲染
