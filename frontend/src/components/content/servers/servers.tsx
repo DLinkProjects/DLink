@@ -40,12 +40,10 @@ export default function Servers() {
   const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>();
   const [rightSelect, setRightSelect] = useState<number | null>(null);
   const [connectLoading, setConnectLoading] = useState(false);
-
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
     borderRight: '1px solid var(--semi-color-border)',
   };
-
   const onOpenCreateServer = () => {
     setCreateServerVisible(true);
   };
@@ -53,7 +51,6 @@ export default function Servers() {
   const onOpenCreateGroup = () => {
     setCreateGroupVisible(true);
   };
-
   const onGetServers = () => {
     GetServers()
       .then(nodes => {
@@ -214,7 +211,7 @@ export default function Servers() {
                 <Folder showIcon={folderStatus} />
               </div>
             )}
-            <Text ellipsis={{ showTooltip: true, pos: 'middle' }} className="w-full">
+            <Text ellipsis={{ showTooltip: true }} className="w-full">
               {label}
             </Text>
           </div>
@@ -356,6 +353,7 @@ export default function Servers() {
             </div>
             <div className="ml-4 mt-4 mr-4 mb-3 flex-grow">
               <Card title="Docker Images">
+                {/*表格组件*/}
                 <Table dataSource={imagesTableData} pagination={true}>
                   <Column title="Repository" dataIndex="name" key="name" />
                   <Column title="Tag" dataIndex="tag" key="tag" />

@@ -37,7 +37,7 @@ export default function CreateGroupComponents({ visible, setVisible, onGetServer
       title="添加新分组"
       visible={visible}
       onCancel={() => setVisible(false)}
-      closeOnEsc={true}
+      // closeOnEsc={true}
       centered
       onOk={onCreateGroup}
     >

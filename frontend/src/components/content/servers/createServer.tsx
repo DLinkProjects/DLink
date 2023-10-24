@@ -78,7 +78,8 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
       width={'600px'}
       title="添加服务器"
       visible={visible}
-      closeOnEsc={true}
+      onCancel={() => setVisible(false)}
+      // closeOnEsc={true}
       centered
       footer={
         <>
