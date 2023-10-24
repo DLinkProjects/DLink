@@ -1,4 +1,4 @@
-import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card } from '@douyinfe/semi-ui';
+import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card, Dropdown } from '@douyinfe/semi-ui';
 import {
   IconServer,
   IconDelete,
@@ -22,6 +22,8 @@ import CreateGroupComponents from '@/components/content/servers/createGroup';
 import toast from 'react-hot-toast';
 import { Connect, GetImageList } from '@wailsApp/go/services/Docker';
 import { entity } from '@wailsApp/go/models';
+import moment from 'moment';
+import prettyBytes from 'pretty-bytes';
 
 export default function Servers() {
   const { Column } = Table;
@@ -35,6 +37,7 @@ export default function Servers() {
   const [createServerVisible, setCreateServerVisible] = useState(false);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
   const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>();
+  const [rightSelect, setRightSelect] = useState<number | null>(null);
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
@@ -76,10 +79,10 @@ export default function Servers() {
       });
   };
 
-  const onConnect = (nodeId: number, serverLabel: string) => {
+  const onConnect = (nodeId: any, serverLabel: any) => {
     Connect(nodeId)
       .then(() => {
-        onGetContainerList(serverLabel);
+        onGetImagesList(serverLabel);
       })
       .catch(e => {
         toast.error(`服务器连接失败：${e}`);
@@ -87,10 +90,10 @@ export default function Servers() {
       });
   };
 
-  const onGetContainerList = (serverLabel: string) => {
+  const onGetImagesList = (serverLabel: string) => {
     GetImageList()
-      .then(iamges => {
-        setImagesTableData(iamges);
+      .then(images => {
+        setImagesTableData(images);
         setServerLabel(serverLabel);
       })
       .catch(e => {
@@ -109,16 +112,7 @@ export default function Servers() {
     return <IconFolder />;
   };
 
-  const Action: React.FC<any> = ({ nodeId, serverLabel, isFolder }) => {
-    return (
-      <ButtonGroup size="small" theme="borderless">
-        {isFolder && <Button icon={<IconLink />} onClick={() => onConnect(nodeId, serverLabel)} />}
-        <Button icon={<IconEdit />} />
-        <Button type="danger" icon={<IconDelete />} />
-      </ButtonGroup>
-    );
-  };
-
+  // Table 列渲染
   const TablesHash: React.FC<any> = ({ text }) => {
     return (
       <Paragraph
@@ -153,38 +147,69 @@ export default function Servers() {
     );
   };
 
+  const TableCreated: React.FC<any> = ({ text }) => {
+    return <span>{moment.unix(text).format('YYYY-MM-DD HH:mm:ss')}</span>;
+  };
+
+  const TableSize: React.FC<any> = ({ text }) => {
+    return <span>{prettyBytes(text)}</span>;
+  };
+
   const renderLabel = ({ data, className, onCheck, expandIcon }: RenderFullLabelProps) => {
     const { id, label } = data;
     const isFolder = data.type !== 'group';
     return (
-      <li
-        role="tree"
-        className={`${className} flex justify-between h-[30px]`}
-        onClick={v => {
-          onCheck(v);
-          setSelectedLabel(label?.toString() || null);
-        }}
+      <Dropdown
+        trigger={'contextMenu'}
+        position={'bottom'}
+        clickToHide={true}
+        render={
+          <Dropdown.Menu>
+            {isFolder && (
+              <Dropdown.Item onClick={() => onConnect(rightSelect, selectedLabel)}>
+                <IconLink />
+                连接服务
+              </Dropdown.Item>
+            )}
+            <Dropdown.Item>
+              <IconEdit />
+              编辑名称
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <IconDelete style={{ color: 'var(--semi-color-danger)' }} />
+              <span style={{ color: 'var(--semi-color-danger)' }}>删除节点</span>
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        }
       >
-        <div className="flex items-center">
-          {isFolder ? null : expandIcon}
-          {isFolder ? (
-            <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
-              {label === selectedLabel ? <IconServer style={{ color: 'var(--semi-color-info)' }} /> : <IconServer />}
-            </div>
-          ) : (
-            <div className="mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
-              <Folder showIcon={folderStatus} />
-            </div>
-          )}
-          <span>{label}</span>
-        </div>
-
-        {label === selectedLabel && (
-          <div>
-            <Action nodeId={id} serverLabel={label} isFolder={isFolder} />
+        <li
+          role="tree"
+          className={`${className} flex justify-between h-[30px]`}
+          onClick={v => {
+            onCheck(v);
+            setSelectedLabel(label?.toString() || null);
+          }}
+          onContextMenu={v => {
+            onCheck(v);
+            setSelectedLabel(label?.toString() || null);
+            setRightSelect(id);
+          }}
+        >
+          <div className="flex items-center">
+            {isFolder ? null : expandIcon}
+            {isFolder ? (
+              <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
+                {label === selectedLabel ? <IconServer style={{ color: 'var(--semi-color-info)' }} /> : <IconServer />}
+              </div>
+            ) : (
+              <div className="mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
+                <Folder showIcon={folderStatus} />
+              </div>
+            )}
+            <span>{label}</span>
           </div>
-        )}
-      </li>
+        </li>
+      </Dropdown>
     );
   };
 
@@ -322,8 +347,13 @@ export default function Servers() {
                   <Column title="Repository" dataIndex="name" key="name" />
                   <Column title="Tag" dataIndex="tag" key="tag" />
                   <Column title="Image ID" dataIndex="id" key="id" render={text => <TablesHash text={text} />} />
-                  <Column title="Created" dataIndex="created" key="created" />
-                  <Column title="Size" dataIndex="size" key="size" />
+                  <Column
+                    title="Created"
+                    dataIndex="created"
+                    key="created"
+                    render={text => <TableCreated text={text} />}
+                  />
+                  <Column title="Size" dataIndex="size" key="size" render={text => <TableSize text={text} />} />
                   <Column title="Actions" dataIndex="actions" key="actions" render={() => <TablesActions />} />
                 </Table>
               </Card>

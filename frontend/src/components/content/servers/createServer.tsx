@@ -10,7 +10,7 @@ type AddServersProps = {
   onGetServers: () => void;
 };
 
-export default function CreateServerComponentes({ visible, setVisible, onGetServers }: AddServersProps) {
+export default function CreateServerComponents({ visible, setVisible, onGetServers }: AddServersProps) {
   const { Option } = Form.Select;
   const initialServerData: entity.Server = new entity.Server();
   const [sshKeyChoose, setSshKeyChoose] = useState(false);
