@@ -35,12 +35,13 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
     setConnectLoading(true);
     TestServerConnect(data)
       .then(() => {
+        setConnectLoading(false);
         toast.success('测试连接成功');
       })
       .catch(e => {
+        setConnectLoading(false);
         toast.error(`测试连接失败：${e}`);
       });
-    setConnectLoading(false);
   };
 
   useEffect(() => {

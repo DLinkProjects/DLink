@@ -10,6 +10,7 @@ import {
   IconCopy,
   IconTick,
   IconLink,
+  IconSpin,
 } from '@douyinfe/semi-icons';
 import React, { useEffect, useState } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
@@ -38,6 +39,7 @@ export default function Servers() {
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
   const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>();
   const [rightSelect, setRightSelect] = useState<number | null>(null);
+  const [connectLoading, setConnectLoading] = useState(false);
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
@@ -80,11 +82,14 @@ export default function Servers() {
   };
 
   const onConnect = (nodeId: any, serverLabel: any) => {
+    setConnectLoading(true);
     Connect(nodeId)
       .then(() => {
+        setConnectLoading(false);
         onGetImagesList(serverLabel);
       })
       .catch(e => {
+        setConnectLoading(false);
         toast.error(`服务器连接失败：${e}`);
         return;
       });
@@ -159,47 +164,50 @@ export default function Servers() {
     const { id, label } = data;
     const isFolder = data.type !== 'group';
     return (
-      <Dropdown
-        trigger={'contextMenu'}
-        position={'bottom'}
-        clickToHide={true}
-        render={
-          <Dropdown.Menu>
-            {isFolder && (
-              <Dropdown.Item onClick={() => onConnect(rightSelect, selectedLabel)}>
-                <IconLink />
-                连接服务
-              </Dropdown.Item>
-            )}
-            <Dropdown.Item>
-              <IconEdit />
-              编辑名称
-            </Dropdown.Item>
-            <Dropdown.Item>
-              <IconDelete style={{ color: 'var(--semi-color-danger)' }} />
-              <span style={{ color: 'var(--semi-color-danger)' }}>删除节点</span>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        }
+      <li
+        role="tree"
+        className={`${className} flex justify-between h-[30px]`}
+        onClick={v => {
+          onCheck(v);
+          setSelectedLabel(label?.toString() || null);
+        }}
+        onContextMenu={v => {
+          onCheck(v);
+          setSelectedLabel(label?.toString() || null);
+          setRightSelect(id);
+        }}
       >
-        <li
-          role="tree"
-          className={`${className} flex justify-between h-[30px]`}
-          onClick={v => {
-            onCheck(v);
-            setSelectedLabel(label?.toString() || null);
-          }}
-          onContextMenu={v => {
-            onCheck(v);
-            setSelectedLabel(label?.toString() || null);
-            setRightSelect(id);
-          }}
+        <Dropdown
+          trigger={'contextMenu'}
+          position={'bottom'}
+          clickToHide={true}
+          render={
+            <Dropdown.Menu>
+              {isFolder && (
+                <Dropdown.Item icon={<IconLink />} onClick={() => onConnect(rightSelect, selectedLabel)}>
+                  连接服务
+                </Dropdown.Item>
+              )}
+              <Dropdown.Item icon={<IconEdit />}>编辑名称</Dropdown.Item>
+              <Dropdown.Item icon={<IconDelete />} type="danger">
+                <span style={{ color: 'var(--semi-color-danger)' }}>删除节点</span>
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          }
         >
-          <div className="flex items-center">
+          <div className="flex items-center w-full">
             {isFolder ? null : expandIcon}
             {isFolder ? (
               <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
-                {label === selectedLabel ? <IconServer style={{ color: 'var(--semi-color-info)' }} /> : <IconServer />}
+                {label === selectedLabel ? (
+                  connectLoading ? (
+                    <IconSpin spin style={{ color: 'var(--semi-color-info)' }} />
+                  ) : (
+                    <IconServer style={{ color: 'var(--semi-color-info)' }} />
+                  )
+                ) : (
+                  <IconServer />
+                )}
               </div>
             ) : (
               <div className="mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
@@ -208,8 +216,8 @@ export default function Servers() {
             )}
             <span>{label}</span>
           </div>
-        </li>
-      </Dropdown>
+        </Dropdown>
+      </li>
     );
   };
 
@@ -308,7 +316,7 @@ export default function Servers() {
             showClear
             showFilteredOnly={true}
             renderFullLabel={renderLabel}
-            onExpand={(_, expanded) => setFolderStatus(expanded.expanded)}
+            // onExpand={(_, expanded) => setFolderStatus(expanded.expanded)}
           />
           <div
             className="flex flex-row h-12 flex-shrink-0 items-center justify-between"
