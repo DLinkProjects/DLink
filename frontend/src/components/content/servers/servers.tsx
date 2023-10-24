@@ -80,15 +80,12 @@ export default function Servers() {
   };
 
   const onConnect = (nodeId: any) => {
-    setConnectLoading(true);
     Connect(nodeId)
       .then(() => {
-        setConnectLoading(false);
         onGetImagesList();
         setConnected(true);
       })
       .catch(e => {
-        setConnectLoading(false);
         toast.error(`服务器连接失败：${e}`);
         return;
       });
@@ -99,11 +96,15 @@ export default function Servers() {
     GetImageList()
       .then(images => {
         setImagesTableData(images);
-        setConnectLoading(false);
+        setTimeout(() => {
+          setConnectLoading(false);
+        }, 500);
       })
       .catch(e => {
         toast.error(`镜像列表获取失败：${e}`);
-        setConnectLoading(false);
+        setTimeout(() => {
+          setConnectLoading(false);
+        }, 500);
       });
   };
 
