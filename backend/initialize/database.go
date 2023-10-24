@@ -31,8 +31,9 @@ func createTables(db *sqlx.DB) {
 			host TEXT NOT NULL,
 			port INTEGER NOT NULL,
 			username TEXT NOT NULL,
-			password TEXT NOT NULL,
-			node_id INTEGER NOT NULL
+			password TEXT,
+			node_id INTEGER NOT NULL,
+			p_key_id INTEGER NOT NULL DEFAULT 0
 		);`
 
 	const nodesTables = `

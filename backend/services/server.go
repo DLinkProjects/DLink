@@ -74,12 +74,13 @@ func (s *Server) GetServerCount() (count uint, err error) {
 	return
 }
 
-// QueryServerByID 根据主键ID查询服务器信息
-func (s *Server) QueryServerByID(id uint) (server *entity.Server, err error) {
-	if err = global.Database.Select(&server, "SELECT * FROM servers WHERE id = ?", id); err != nil {
+// QueryServerByNodeID 根据NodeID查询服务器信息
+func (s *Server) QueryServerByNodeID(nodeId uint) (*entity.Server, error) {
+	var server entity.Server
+	if err := global.Database.Get(&server, "SELECT * FROM servers WHERE node_id = ?", nodeId); err != nil {
 		return nil, err
 	}
-	return
+	return &server, nil
 }
 
 // TestServerConnect 测试服务器连接

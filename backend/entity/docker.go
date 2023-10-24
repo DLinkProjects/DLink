@@ -27,3 +27,11 @@ type ContainerMount struct {
 	Mode        string `json:"mode"`
 	RW          bool   `json:"rw"`
 }
+
+type Image struct {
+	Name    string `json:"name"`
+	Tag     string `json:"tag"`
+	ID      string `json:"id"`
+	Created int64  `json:"created"`
+	Size    int64  `json:"size"`
+}

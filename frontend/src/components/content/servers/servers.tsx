@@ -20,18 +20,21 @@ import CreateServerComponents from '@/components/content/servers/createServer';
 import { GetServers } from '@wailsApp/go/services/Server';
 import CreateGroupComponents from '@/components/content/servers/createGroup';
 import toast from 'react-hot-toast';
-import { Connect, GetContainerList } from '@wailsApp/go/services/Docker';
+import { Connect, GetImageList } from '@wailsApp/go/services/Docker';
+import { entity } from '@wailsApp/go/models';
 
 export default function Servers() {
   const { Column } = Table;
   const { Paragraph, Text } = Typography;
   const { t } = useTranslation();
-  const [serverValue, setServerValue] = useState('');
+  const [serverLabel, setServerLabel] = useState<string>();
+  const [connected, setConnected] = useState<boolean>(false);
+  const [imagesTableData, setImagesTableData] = useState<entity.Image[]>();
   const [folderStatus, setFolderStatus] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [createServerVisible, setCreateServerVisible] = useState(false);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
-  const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>([]);
+  const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>();
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
@@ -41,12 +44,13 @@ export default function Servers() {
   const onOpenCreateServer = () => {
     setCreateServerVisible(true);
   };
+
   const onOpenCreateGroup = () => {
     setCreateGroupVisible(true);
   };
 
-  const onGetServers = async () => {
-    await GetServers()
+  const onGetServers = () => {
+    GetServers()
       .then(nodes => {
         const findChildren = (parentId: number): TreeNodeData[] => {
           return (nodes || [])
@@ -54,7 +58,8 @@ export default function Servers() {
             .map(item => {
               const children = findChildren(item.id);
               return {
-                key: item.key.Int64.toString(),
+                id: item.id,
+                key: item.key.toString(),
                 label: item.name,
                 children: children.length > 0 ? children : undefined,
                 parentId: item.parent_id,
@@ -71,42 +76,31 @@ export default function Servers() {
       });
   };
 
-  const onGetContainerList = async () => {
-    await Connect(4).catch(e => {
-      toast.error(`服务器连接失败：${e}`);
-      console.log(e);
-    });
-    await GetContainerList()
-      .then(nodes => {
-        console.log(nodes);
+  const onConnect = (nodeId: number, serverLabel: string) => {
+    Connect(nodeId)
+      .then(() => {
+        onGetContainerList(serverLabel);
       })
       .catch(e => {
-        toast.error(`服务器列表获取失败：${e}`);
+        toast.error(`服务器连接失败：${e}`);
+        return;
+      });
+  };
+
+  const onGetContainerList = (serverLabel: string) => {
+    GetImageList()
+      .then(iamges => {
+        setImagesTableData(iamges);
+        setServerLabel(serverLabel);
+      })
+      .catch(e => {
+        toast.error(`镜像列表获取失败：${e}`);
       });
   };
 
   useEffect(() => {
-    onGetServers().catch(e => {
-      toast.error('服务器列表获取失败');
-    });
+    onGetServers();
   }, []);
-
-  // MOCK
-  const generateTableData = () => {
-    const tableData = [];
-    for (let i = 1; i <= 20; i++) {
-      tableData.push({
-        name: `redis${i}`,
-        tag: 'latest',
-        hash: `7c4b517da47d331a47827390b9e8eb1be7ee68133af9c332660001b4d44782${i < 10 ? '0' + i : i}`,
-        status: 'In use',
-        created: '2023-10-13 12:02:35',
-        size: '152.57 MB',
-      });
-    }
-    return tableData;
-  };
-  const tableData = generateTableData();
 
   const Folder: React.FC<any> = ({ showIcon }) => {
     if (showIcon) {
@@ -115,10 +109,10 @@ export default function Servers() {
     return <IconFolder />;
   };
 
-  const Action: React.FC<any> = ({ serverValue, setServerValue, isFolder }) => {
+  const Action: React.FC<any> = ({ nodeId, serverLabel, isFolder }) => {
     return (
       <ButtonGroup size="small" theme="borderless">
-        {isFolder && <Button icon={<IconLink />} onClick={onGetContainerList} />}
+        {isFolder && <Button icon={<IconLink />} onClick={() => onConnect(nodeId, serverLabel)} />}
         <Button icon={<IconEdit />} />
         <Button type="danger" icon={<IconDelete />} />
       </ButtonGroup>
@@ -140,7 +134,7 @@ export default function Servers() {
               opts: { content: text },
             },
           }}
-          style={{ width: 70 }}
+          style={{ width: 80 }}
         >
           {text}
         </Text>
@@ -160,9 +154,8 @@ export default function Servers() {
   };
 
   const renderLabel = ({ data, className, onCheck, expandIcon }: RenderFullLabelProps) => {
-    const { label } = data;
+    const { id, label } = data;
     const isFolder = data.type !== 'group';
-
     return (
       <li
         role="tree"
@@ -188,7 +181,7 @@ export default function Servers() {
 
         {label === selectedLabel && (
           <div>
-            <Action serverValue={label} setServerValue={setServerValue} isFolder={isFolder} />
+            <Action nodeId={id} serverLabel={label} isFolder={isFolder} />
           </div>
         )}
       </li>
@@ -318,19 +311,19 @@ export default function Servers() {
         </div>
       </Resizable>
       <div className="flex flex-grow h-full w-full">
-        {serverValue ? (
+        {serverLabel ? (
           <div className="overflow-auto max-h-full w-full">
             <div className="ml-4 mt-4 mr-4 mb-1">
-              <Card title={`Docker Server ${serverValue}`}>docker</Card>
+              <Card title={`Docker Server ${serverLabel}`}>docker</Card>
             </div>
             <div className="ml-4 mt-4 mr-4 mb-3 flex-grow">
               <Card title="Docker Images">
-                <Table dataSource={tableData} pagination={true}>
-                  <Column title="Name" dataIndex="name" key="name" />
+                <Table dataSource={imagesTableData} pagination={true}>
+                  <Column title="Repository" dataIndex="name" key="name" />
                   <Column title="Tag" dataIndex="tag" key="tag" />
-                  <Column title="Hash" dataIndex="hash" key="hash" render={text => <TablesHash text={text} />} />
-                  <Column title="status" dataIndex="status" key="status" />
+                  <Column title="Image ID" dataIndex="id" key="id" render={text => <TablesHash text={text} />} />
                   <Column title="Created" dataIndex="created" key="created" />
+                  <Column title="Size" dataIndex="size" key="size" />
                   <Column title="Actions" dataIndex="actions" key="actions" render={() => <TablesActions />} />
                 </Table>
               </Card>

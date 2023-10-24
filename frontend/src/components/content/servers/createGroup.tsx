@@ -13,12 +13,12 @@ type AddGroupsProps = {
 export default function CreateGroupComponents({ visible, setVisible, onGetServers }: AddGroupsProps) {
   const [groupData, setGroupData] = useState('');
 
-  const onCreateGroup = async () => {
+  const onCreateGroup = () => {
     const node = new entity.Node();
     node.name = groupData;
     node.type = 'group';
     node.parent_id = 0;
-    await CreateGroup(node)
+    CreateGroup(node)
       .then(() => {
         setVisible(false);
         setGroupData('');

@@ -15,8 +15,8 @@ func TestDocker(t *testing.T) {
 	).Connect()
 	assert.Nil(t, err)
 
-	info, err := docker.Info()
+	info, err := docker.ImageList()
 	if assert.Nil(t, err) {
-		assert.NotEmpty(t, info.ServerVersion)
+		assert.NotEmpty(t, info)
 	}
 }

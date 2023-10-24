@@ -18,8 +18,8 @@ export default function CreateServerComponentes({ visible, setVisible, onGetServ
   const [groupsSelect, setGroupsSelect] = useState<entity.Node[]>([]);
   const [testConnectLoading, setConnectLoading] = useState(false);
 
-  const onCreateServer = async (data: entity.Server) => {
-    await CreateServer(data)
+  const onCreateServer = (data: entity.Server) => {
+    CreateServer(data)
       .then(() => {
         setServerData(initialServerData);
         setVisible(false);
@@ -31,9 +31,9 @@ export default function CreateServerComponentes({ visible, setVisible, onGetServ
       });
   };
 
-  const onTestServerConnect = async (data: entity.Server) => {
+  const onTestServerConnect = (data: entity.Server) => {
     setConnectLoading(true);
-    await TestServerConnect(data)
+    TestServerConnect(data)
       .then(() => {
         toast.success('测试连接成功');
       })
