@@ -12,7 +12,7 @@ import {
   IconLink,
   IconSpin,
 } from '@douyinfe/semi-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
@@ -25,14 +25,14 @@ import { Connect, GetImageList } from '@wailsApp/go/services/Docker';
 import { entity } from '@wailsApp/go/models';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
+import { Virtualized } from '@douyinfe/semi-ui/lib/es/table/interface';
 
 export default function Servers() {
   const { Column } = Table;
   const { Paragraph, Text } = Typography;
   const { t } = useTranslation();
-  const [serverLabel, setServerLabel] = useState<string>();
   const [connected, setConnected] = useState<boolean>(false);
-  const [imagesTableData, setImagesTableData] = useState<entity.Image[]>();
+  const [imagesTableData, setImagesTableData] = useState<entity.Image[]>([]);
   const [folderStatus, setFolderStatus] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [createServerVisible, setCreateServerVisible] = useState(false);
@@ -40,6 +40,7 @@ export default function Servers() {
   const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>();
   const [rightSelect, setRightSelect] = useState<number | null>(null);
   const [connectLoading, setConnectLoading] = useState(false);
+
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
     borderRight: '1px solid var(--semi-color-border)',
@@ -78,12 +79,13 @@ export default function Servers() {
       });
   };
 
-  const onConnect = (nodeId: any, serverLabel: any) => {
+  const onConnect = (nodeId: any) => {
     setConnectLoading(true);
     Connect(nodeId)
       .then(() => {
         setConnectLoading(false);
-        onGetImagesList(serverLabel);
+        onGetImagesList();
+        setConnected(true);
       })
       .catch(e => {
         setConnectLoading(false);
@@ -92,14 +94,16 @@ export default function Servers() {
       });
   };
 
-  const onGetImagesList = (serverLabel: string) => {
+  const onGetImagesList = () => {
+    setConnectLoading(true);
     GetImageList()
       .then(images => {
         setImagesTableData(images);
-        setServerLabel(serverLabel);
+        setConnectLoading(false);
       })
       .catch(e => {
         toast.error(`镜像列表获取失败：${e}`);
+        setConnectLoading(false);
       });
   };
 
@@ -112,49 +116,6 @@ export default function Servers() {
       return <IconFolderOpen />;
     }
     return <IconFolder />;
-  };
-
-  // Table 列渲染
-  const TablesHash: React.FC<any> = ({ text }) => {
-    return (
-      <Paragraph
-        copyable={{
-          content: text,
-          successTip: <IconTick />,
-          icon: <IconCopy style={{ color: 'var(--semi-color-text-2)' }} />,
-        }}
-      >
-        <Text
-          ellipsis={{
-            showTooltip: {
-              opts: { content: text },
-            },
-          }}
-          style={{ width: 80 }}
-        >
-          {text}
-        </Text>
-      </Paragraph>
-    );
-  };
-
-  const TablesActions: React.FC = () => {
-    return (
-      <div>
-        <ButtonGroup size="small" theme="borderless">
-          <Button icon={<IconTreeTriangleRight />} />
-          <Button type="danger" icon={<IconDelete />} />
-        </ButtonGroup>
-      </div>
-    );
-  };
-
-  const TableCreated: React.FC<any> = ({ text }) => {
-    return <span>{moment.unix(text).format('YYYY-MM-DD HH:mm:ss')}</span>;
-  };
-
-  const TableSize: React.FC<any> = ({ text }) => {
-    return <span>{prettyBytes(text)}</span>;
   };
 
   const renderLabel = ({ data, className, onCheck, expandIcon }: RenderFullLabelProps) => {
@@ -181,7 +142,7 @@ export default function Servers() {
           render={
             <Dropdown.Menu>
               {isFolder && (
-                <Dropdown.Item icon={<IconLink />} onClick={() => onConnect(rightSelect, selectedLabel)}>
+                <Dropdown.Item icon={<IconLink />} onClick={() => onConnect(rightSelect)}>
                   连接服务
                 </Dropdown.Item>
               )}
@@ -293,6 +254,65 @@ export default function Servers() {
     console.log(info);
   };
 
+  // TODO: 需要去获取窗口的大小
+  const scroll = { y: 200 };
+  const virtualized = {
+    // TODO: 无限滚动的实现
+    itemSize: 56,
+    // onScroll: ({ scrollDirection, scrollOffset, scrollUpdateWasRequested }: any) => {
+    //   if (
+    //     scrollDirection === 'forward' &&
+    //     scrollOffset >= (imagesTableData.length - Math.ceil(scroll.y / 56) * 1.5) * 56 &&
+    //     !scrollUpdateWasRequested
+    //   ) {
+    //     onGetImagesList();
+    //   }
+    // },
+  };
+
+  // Table 列渲染
+  const TablesHash: React.FC<any> = ({ text }) => {
+    return (
+      <Paragraph
+        copyable={{
+          content: text,
+          successTip: <IconTick />,
+          icon: <IconCopy style={{ color: 'var(--semi-color-text-2)' }} />,
+        }}
+      >
+        <Text
+          ellipsis={{
+            showTooltip: {
+              opts: { content: text },
+            },
+          }}
+          style={{ width: 80 }}
+        >
+          {text}
+        </Text>
+      </Paragraph>
+    );
+  };
+
+  const TablesActions: React.FC = () => {
+    return (
+      <div>
+        <ButtonGroup size="small" theme="borderless">
+          <Button icon={<IconTreeTriangleRight />} />
+          <Button type="danger" icon={<IconDelete />} />
+        </ButtonGroup>
+      </div>
+    );
+  };
+
+  const TableCreated: React.FC<any> = ({ text }) => {
+    return <span>{moment.unix(text).format('YYYY-MM-DD HH:mm:ss')}</span>;
+  };
+
+  const TableSize: React.FC<any> = ({ text }) => {
+    return <span>{prettyBytes(text)}</span>;
+  };
+
   return (
     <div className="flex h-full overflow-hidden">
       <Resizable
@@ -346,15 +366,17 @@ export default function Servers() {
         </div>
       </Resizable>
       <div className="flex flex-grow h-full w-full">
-        {serverLabel ? (
-          <div className="overflow-auto max-h-full w-full">
+        {connected ? (
+          <div className="flex flex-col h-full w-full">
             <div className="ml-4 mt-4 mr-4 mb-1">
-              <Card title={`Docker Server ${serverLabel}`}>docker</Card>
+              <Card title={`Docker Server`}>
+                <p>docker</p>
+              </Card>
             </div>
-            <div className="ml-4 mt-4 mr-4 mb-3 flex-grow">
-              <Card title="Docker Images">
-                {/*表格组件*/}
-                <Table dataSource={imagesTableData} pagination={true}>
+            <div className="ml-4 mt-4 mr-4 mb-3 flex flex-grow">
+              <Card className="flex-grow" title="Docker Images">
+                {/* 表格组件 */}
+                <Table scroll={scroll} dataSource={imagesTableData} virtualized={virtualized} pagination={false}>
                   <Column title="Repository" dataIndex="name" key="name" />
                   <Column title="Tag" dataIndex="tag" key="tag" />
                   <Column title="Image ID" dataIndex="id" key="id" render={text => <TablesHash text={text} />} />
