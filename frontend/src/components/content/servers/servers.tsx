@@ -214,7 +214,9 @@ export default function Servers() {
                 <Folder showIcon={folderStatus} />
               </div>
             )}
-            <span>{label}</span>
+            <Text ellipsis={{ showTooltip: true, pos: 'middle' }} className="w-full">
+              {label}
+            </Text>
           </div>
         </Dropdown>
       </li>
@@ -307,6 +309,9 @@ export default function Servers() {
       >
         <div className="flex flex-col h-full">
           <Tree
+            virtualize={{
+              itemSize: 30,
+            }}
             draggable
             onDrop={onDrop}
             className="flex-grow h-0"

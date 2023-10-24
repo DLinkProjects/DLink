@@ -1,8 +1,11 @@
-import { Button, Checkbox, Form, Modal, TabPane, Tabs } from '@douyinfe/semi-ui';
+import { Button, Checkbox, Empty, Form, Modal, TabPane, Tabs } from '@douyinfe/semi-ui';
 import { entity } from '@wailsApp/go/models';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CreateServer, GetGroups, TestServerConnect } from '@wailsApp/go/services/Server';
 import toast from 'react-hot-toast';
+import { IllustrationNoContent, IllustrationNoContentDark } from '@douyinfe/semi-illustrations';
+import { useTranslation } from 'react-i18next';
+import type { BaseFormApi as FormApi } from '@douyinfe/semi-foundation/lib/es/form/interface';
 
 type AddServersProps = {
   visible: boolean;
@@ -11,37 +14,50 @@ type AddServersProps = {
 };
 
 export default function CreateServerComponents({ visible, setVisible, onGetServers }: AddServersProps) {
+  const { t } = useTranslation();
   const { Option } = Form.Select;
   const initialServerData: entity.Server = new entity.Server();
   const [sshKeyChoose, setSshKeyChoose] = useState(false);
   const [serverData, setServerData] = useState<entity.Server>(initialServerData);
   const [groupsSelect, setGroupsSelect] = useState<entity.Node[]>([]);
   const [testConnectLoading, setConnectLoading] = useState(false);
+  const formApiRef = useRef<any>(null);
 
-  const onCreateServer = (data: entity.Server) => {
-    CreateServer(data)
-      .then(() => {
-        setServerData(initialServerData);
-        setVisible(false);
-        onGetServers();
-        toast.success('服务器添加成功');
-      })
-      .catch(e => {
-        toast.error(`服务器添加失败：${e}`);
-      });
+  const getFormApi = (formApi: FormApi) => {
+    formApiRef.current = formApi;
   };
 
-  const onTestServerConnect = (data: entity.Server) => {
-    setConnectLoading(true);
-    TestServerConnect(data)
-      .then(() => {
-        setConnectLoading(false);
-        toast.success('测试连接成功');
-      })
-      .catch(e => {
-        setConnectLoading(false);
-        toast.error(`测试连接失败：${e}`);
+  const onCreateServer = () => {
+    if (formApiRef.current) {
+      formApiRef.current.validate().then((values: { serverData: entity.Server }) => {
+        CreateServer(values.serverData)
+          .then(() => {
+            setVisible(false);
+            onGetServers();
+            toast.success('服务器添加成功');
+          })
+          .catch(e => {
+            toast.error(`服务器添加失败：${e}`);
+          });
       });
+    }
+  };
+
+  const onTestServerConnect = () => {
+    if (formApiRef.current) {
+      formApiRef.current.validate().then((values: { serverData: entity.Server }) => {
+        setConnectLoading(true);
+        TestServerConnect(values.serverData)
+          .then(() => {
+            setConnectLoading(false);
+            toast.success('测试连接成功');
+          })
+          .catch(e => {
+            setConnectLoading(false);
+            toast.error(`测试连接失败：${e}`);
+          });
+      });
+    }
   };
 
   useEffect(() => {
@@ -70,7 +86,7 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
             theme="solid"
             type="primary"
             className="float-left"
-            onClick={() => onTestServerConnect(serverData)}
+            onClick={onTestServerConnect}
             loading={testConnectLoading}
           >
             测试连接
@@ -78,7 +94,7 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
           <Button type="primary" onClick={() => setVisible(false)}>
             取消
           </Button>
-          <Button type="primary" theme="solid" onClick={() => onCreateServer(serverData)}>
+          <Button type="primary" theme="solid" onClick={onCreateServer}>
             确认
           </Button>
         </>
@@ -94,12 +110,18 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
           >
             使用 SSH 秘钥登录
           </Checkbox>
-          <Form onValueChange={values => setServerData(values.serverData)}>
-            <Form.Input className="w-full" field="serverData.link_name" label="链接名" placeholder="输入备注或者名称" />
+          <Form getFormApi={getFormApi} onValueChange={values => setServerData(values.serverData)}>
+            <Form.Input
+              className="w-full"
+              rules={[{ required: true, message: '名称不可为空' }]}
+              field="serverData.link_name"
+              label="链接名"
+              placeholder="输入备注或者名称"
+            />
             <Form.Select
               className="w-full"
               field="serverData.node_id"
-              label="分组"
+              label={{ text: '分组', optional: true }}
               placeholder="请选择分组"
               initValue={0}
             >
@@ -114,13 +136,41 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
             </Form.Select>
             <div className="flex flex-row justify-between">
               <div className="basis-3/4">
-                <Form.Input field="serverData.host" label="服务器地址" placeholder="服务器地址" />
+                <Form.Input
+                  rules={[
+                    { required: true, message: 'IP 不可为空' },
+                    {
+                      validator: (rule, value) => {
+                        const ipv4Pattern =
+                          /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                        return ipv4Pattern.test(value);
+                      },
+                      message: '请输入正确的 IP 地址',
+                    },
+                  ]}
+                  field="serverData.host"
+                  label="服务器地址"
+                  placeholder="服务器地址"
+                />
               </div>
               <div>
                 <p className="ml-2 mr-2 mt-10">:</p>
               </div>
               <div>
                 <Form.InputNumber
+                  rules={[
+                    {
+                      required: true,
+                      message: '端口不可为空',
+                    },
+                    {
+                      validator: (rule, value) => {
+                        const portNumber = parseInt(value, 10); // 将值转换为整数
+                        return !isNaN(portNumber) && portNumber >= 0 && portNumber <= 65535;
+                      },
+                      message: '端口只能在 0-65535',
+                    },
+                  ]}
                   className="mt-6"
                   field="serverData.port"
                   label="端口"
@@ -131,19 +181,32 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
               </div>
             </div>
             <Form.Input
+              rules={[
+                {
+                  required: true,
+                  message: '用户名不可为空',
+                },
+              ]}
               field="serverData.username"
               label="用户名"
               style={{ width: '100%' }}
               placeholder="请输入 SSH 用户名"
             />
             {sshKeyChoose ? (
-              <Form.Select className="w-full" field="key" label="秘钥" placeholder="请选择 SSH 秘钥">
+              <Form.Select
+                rules={[{ required: sshKeyChoose, message: '秘钥不可为空' }]}
+                className="w-full"
+                field="key"
+                label="秘钥"
+                placeholder="请选择 SSH 秘钥"
+              >
                 <Option value="admin">127.0.0.1</Option>
                 <Option value="user">192.168.1.1</Option>
                 <Option value="guest">192.168.0.1</Option>
               </Form.Select>
             ) : (
               <Form.Input
+                rules={[{ required: !sshKeyChoose, message: '密码不可为空' }]}
                 field="serverData.password"
                 mode="password"
                 label="密码"
@@ -154,7 +217,12 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
           </Form>
         </TabPane>
         <TabPane tab="高级配置" itemKey="2">
-          123
+          <Empty
+            image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
+            darkModeImage={<IllustrationNoContentDark style={{ width: 150, height: 150 }} />}
+            title={t('functionsUnderConstruction')}
+            description={t('notYetOpen')}
+          />
         </TabPane>
       </Tabs>
     </Modal>
