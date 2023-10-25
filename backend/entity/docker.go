@@ -35,3 +35,22 @@ type Image struct {
 	Created int64  `json:"created"`
 	Size    int64  `json:"size"`
 }
+
+type Summary struct {
+	Containers        int    `json:"containers"`
+	ContainersRunning int    `json:"containers_running"`
+	ContainersPaused  int    `json:"containers_paused"`
+	ContainersStopped int    `json:"containers_stopped"`
+	Hostname          string `json:"hostname"`
+	NumCPU            int    `json:"num_cpu"`
+	MemTotal          int64  `json:"mem_total"`
+	Arch              string `json:"arch"`
+	OS                string `json:"os"`
+	OSVer             string `json:"os_ver"`
+	KernelVer         string `json:"kernel_ver"`
+	OSType            string `json:"os_type"`
+	DockerVer         string `json:"docker_ver"`
+	Images            int    `json:"images"`
+	Driver            string `json:"driver"`
+	Warns             int    `json:"warns"`
+}

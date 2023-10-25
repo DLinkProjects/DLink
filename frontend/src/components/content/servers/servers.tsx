@@ -1,4 +1,16 @@
-import { Tree, ButtonGroup, Button, Tooltip, Empty, Typography, Table, Card, Dropdown } from '@douyinfe/semi-ui';
+import {
+  Tree,
+  ButtonGroup,
+  Button,
+  Tooltip,
+  Empty,
+  Typography,
+  Table,
+  Card,
+  Dropdown,
+  Descriptions,
+  Tag,
+} from '@douyinfe/semi-ui';
 import {
   IconServer,
   IconDelete,
@@ -12,7 +24,7 @@ import {
   IconLink,
   IconSpin,
 } from '@douyinfe/semi-icons';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
@@ -21,11 +33,10 @@ import CreateServerComponents from '@/components/content/servers/createServer';
 import { GetServers } from '@wailsApp/go/services/Server';
 import CreateGroupComponents from '@/components/content/servers/createGroup';
 import toast from 'react-hot-toast';
-import { Connect, GetImageList } from '@wailsApp/go/services/Docker';
+import { Connect, GetImageList, GetServerSummary } from '@wailsApp/go/services/Docker';
 import { entity } from '@wailsApp/go/models';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
-import { Virtualized } from '@douyinfe/semi-ui/lib/es/table/interface';
 
 export default function Servers() {
   const { Column } = Table;
@@ -33,12 +44,13 @@ export default function Servers() {
   const { t } = useTranslation();
   const [connected, setConnected] = useState<boolean>(false);
   const [imagesTableData, setImagesTableData] = useState<entity.Image[]>([]);
+  const [serverSummary, setServerSummary] = useState<entity.Summary>();
   const [folderStatus, setFolderStatus] = useState(false);
-  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+  const [selectedLabel, setSelectedLabel] = useState<string>('');
   const [createServerVisible, setCreateServerVisible] = useState(false);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
-  const [treeData, setTreeData] = useState<TreeNodeData[] | undefined>();
-  const [rightSelect, setRightSelect] = useState<number | null>(null);
+  const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
+  const [rightSelect, setRightSelect] = useState<number>(0);
   const [connectLoading, setConnectLoading] = useState(false);
 
   const serverListStyle = {
@@ -52,6 +64,7 @@ export default function Servers() {
   const onOpenCreateGroup = () => {
     setCreateGroupVisible(true);
   };
+
   const onGetServers = () => {
     GetServers()
       .then(nodes => {
@@ -79,32 +92,39 @@ export default function Servers() {
       });
   };
 
-  const onConnect = (nodeId: any) => {
+  const onConnect = (nodeId: number) => {
+    setConnectLoading(true);
     Connect(nodeId)
       .then(() => {
+        onGetServerSummary();
         onGetImagesList();
         setConnected(true);
       })
       .catch(e => {
         toast.error(`服务器连接失败：${e}`);
-        return;
+      })
+      .finally(() => {
+        setTimeout(() => setConnectLoading(false), 500);
+      });
+  };
+
+  const onGetServerSummary = () => {
+    GetServerSummary()
+      .then(summary => {
+        setServerSummary(summary);
+      })
+      .catch(e => {
+        toast.error(`服务器信息获取失败：${e}`);
       });
   };
 
   const onGetImagesList = () => {
-    setConnectLoading(true);
     GetImageList()
       .then(images => {
         setImagesTableData(images);
-        setTimeout(() => {
-          setConnectLoading(false);
-        }, 500);
       })
       .catch(e => {
         toast.error(`镜像列表获取失败：${e}`);
-        setTimeout(() => {
-          setConnectLoading(false);
-        }, 500);
       });
   };
 
@@ -128,11 +148,11 @@ export default function Servers() {
         className={`${className} flex justify-between h-[30px]`}
         onClick={v => {
           onCheck(v);
-          setSelectedLabel(label?.toString() || null);
+          setSelectedLabel(label?.toString() || '');
         }}
         onContextMenu={v => {
           onCheck(v);
-          setSelectedLabel(label?.toString() || null);
+          setSelectedLabel(label?.toString() || '');
           setRightSelect(id);
         }}
       >
@@ -370,12 +390,37 @@ export default function Servers() {
         {connected ? (
           <div className="flex flex-col h-full w-full">
             <div className="ml-4 mt-4 mr-4 mb-1">
-              <Card title={`Docker Server`}>
-                <p>docker</p>
+              <Card>
+                <div className="flex flex-row gap-4 m-4">
+                  <Descriptions className="basis-1/5">
+                    <Descriptions.Item itemKey="容器数">{serverSummary?.containers}</Descriptions.Item>
+                    <Descriptions.Item itemKey="运行中">{serverSummary?.containers_running}</Descriptions.Item>
+                    <Descriptions.Item itemKey="已暂停">{serverSummary?.containers_paused}</Descriptions.Item>
+                    <Descriptions.Item itemKey="已停止">{serverSummary?.containers_stopped}</Descriptions.Item>
+                  </Descriptions>
+                  <Descriptions className="basis-1/5">
+                    <Descriptions.Item itemKey="警告数">{serverSummary?.warns}</Descriptions.Item>
+                    <Descriptions.Item itemKey="镜像数">{serverSummary?.images}</Descriptions.Item>
+                    <Descriptions.Item itemKey="引擎版本">{serverSummary?.docker_ver}</Descriptions.Item>
+                    <Descriptions.Item itemKey="存储驱动">{serverSummary?.driver}</Descriptions.Item>
+                  </Descriptions>
+                  <Descriptions className="basis-1/5">
+                    <Descriptions.Item itemKey="主机名">{serverSummary?.hostname}</Descriptions.Item>
+                    <Descriptions.Item itemKey="处理器">{serverSummary?.num_cpu}</Descriptions.Item>
+                    <Descriptions.Item itemKey="内存">{prettyBytes(serverSummary?.mem_total || 0)}</Descriptions.Item>
+                    <Descriptions.Item itemKey="架构">{serverSummary?.arch}</Descriptions.Item>
+                  </Descriptions>
+                  <Descriptions className="basis-2/5">
+                    <Descriptions.Item itemKey="操作系统">{serverSummary?.os}</Descriptions.Item>
+                    <Descriptions.Item itemKey="系统版本">{serverSummary?.os_ver}</Descriptions.Item>
+                    <Descriptions.Item itemKey="内核版本">{serverSummary?.kernel_ver}</Descriptions.Item>
+                    <Descriptions.Item itemKey="系统类型">{serverSummary?.os_type}</Descriptions.Item>
+                  </Descriptions>
+                </div>
               </Card>
             </div>
             <div className="ml-4 mt-4 mr-4 mb-3 flex flex-grow">
-              <Card className="flex-grow" title="Docker Images">
+              <Card title="Docker Images">
                 {/* 表格组件 */}
                 <Table scroll={scroll} dataSource={imagesTableData} virtualized={virtualized} pagination={false}>
                   <Column title="Repository" dataIndex="name" key="name" />

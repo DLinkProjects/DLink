@@ -113,3 +113,12 @@ func (a *Adapter) ContainerStart(containerID string) error {
 	}
 	return nil
 }
+
+// Summary 获取基本信息
+func (a *Adapter) Summary() (*types.Info, error) {
+	info, err := a.cli.Info(a.ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &info, nil
+}

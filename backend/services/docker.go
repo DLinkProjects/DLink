@@ -80,3 +80,28 @@ func (d *Docker) GetImageList() (images []*entity.Image, err error) {
 	}
 	return
 }
+
+func (d *Docker) GetServerSummary() (*entity.Summary, error) {
+	info, err := d.DockerCLI.Summary()
+	if err != nil {
+		return nil, err
+	}
+	return &entity.Summary{
+		Containers:        info.Containers,
+		ContainersRunning: info.ContainersRunning,
+		ContainersPaused:  info.ContainersPaused,
+		ContainersStopped: info.ContainersStopped,
+		Hostname:          info.Name,
+		NumCPU:            info.NCPU,
+		MemTotal:          info.MemTotal,
+		Arch:              info.Architecture,
+		OS:                info.OperatingSystem,
+		OSVer:             info.OSVersion,
+		KernelVer:         info.KernelVersion,
+		OSType:            info.OSType,
+		DockerVer:         info.ServerVersion,
+		Warns:             len(info.Warnings),
+		Driver:            info.Driver,
+		Images:            info.Images,
+	}, nil
+}

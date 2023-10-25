@@ -16,9 +16,8 @@ type AddServersProps = {
 export default function CreateServerComponents({ visible, setVisible, onGetServers }: AddServersProps) {
   const { t } = useTranslation();
   const { Option } = Form.Select;
-  const initialServerData: entity.Server = new entity.Server();
   const [sshKeyChoose, setSshKeyChoose] = useState(false);
-  const [serverData, setServerData] = useState<entity.Server>(initialServerData);
+  const [serverData, setServerData] = useState<entity.Server>();
   const [groupsSelect, setGroupsSelect] = useState<entity.Node[]>([]);
   const [testConnectLoading, setConnectLoading] = useState(false);
   const formApiRef = useRef<any>(null);
@@ -49,13 +48,12 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
         setConnectLoading(true);
         TestServerConnect(values.serverData)
           .then(() => {
-            setConnectLoading(false);
             toast.success('测试连接成功');
           })
           .catch(e => {
-            setConnectLoading(false);
             toast.error(`测试连接失败：${e}`);
-          });
+          })
+          .finally(() => setConnectLoading(false));
       });
     }
   };
