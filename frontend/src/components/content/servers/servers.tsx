@@ -275,22 +275,6 @@ export default function Servers() {
     console.log(info);
   };
 
-  // TODO: 需要去获取窗口的大小
-  const scroll = { y: 100 };
-  const virtualized = {
-    // TODO: 无限滚动的实现
-    itemSize: 56,
-    onScroll: ({ scrollDirection, scrollOffset, scrollUpdateWasRequested }: any) => {
-      if (
-        scrollDirection === 'forward' &&
-        scrollOffset >= (imagesTableData.length - Math.ceil(scroll.y / 56) * 1.5) * 56 &&
-        !scrollUpdateWasRequested
-      ) {
-        onGetImagesList();
-      }
-    },
-  };
-
   // Table 列渲染
   const TablesHash: React.FC<any> = ({ text }) => {
     return (
@@ -388,7 +372,7 @@ export default function Servers() {
       </Resizable>
       <div className="flex flex-grow h-full w-full">
         {connected ? (
-          <div className="flex flex-col h-full w-full">
+          <div className="overflow-auto max-h-full w-full">
             <div className="ml-4 mt-4 mr-4 mb-1">
               <Card>
                 <div className="flex flex-row gap-4 m-4">
@@ -419,10 +403,10 @@ export default function Servers() {
                 </div>
               </Card>
             </div>
-            <div className="ml-4 mt-4 mr-4 mb-3 flex flex-grow">
+            <div className="ml-4 mt-4 mr-4 mb-3">
               <Card title="Docker Images">
                 {/* 表格组件 */}
-                <Table scroll={scroll} dataSource={imagesTableData} virtualized={virtualized} pagination={false}>
+                <Table dataSource={imagesTableData} pagination={true}>
                   <Column title="Repository" dataIndex="name" key="name" />
                   <Column title="Tag" dataIndex="tag" key="tag" />
                   <Column title="Image ID" dataIndex="id" key="id" render={text => <TablesHash text={text} />} />

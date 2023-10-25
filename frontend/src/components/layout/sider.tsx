@@ -1,4 +1,4 @@
-import { Nav } from '@douyinfe/semi-ui';
+import { Nav, Dropdown } from '@douyinfe/semi-ui';
 import {
   IconGithubLogo,
   IconSetting,
@@ -10,6 +10,8 @@ import {
   IconServer,
   IconInfoCircle,
   IconKey,
+  IconUploadError,
+  IconUpload,
 } from '@douyinfe/semi-icons';
 import { BrowserOpenURL } from '@wailsApp/runtime';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +21,7 @@ import About from '../settings/about';
 import { motion, useAnimation } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
+import toast from 'react-hot-toast';
 
 export default function Sider() {
   const { t } = useTranslation();
@@ -96,6 +99,10 @@ export default function Sider() {
     setAboutVisible(true);
   };
 
+  const onCheckUpdate = () => {
+    toast.success('当前是最新版本');
+  };
+
   return (
     <div className="flex flex-col h-[100%]">
       <div className="flex-grow">
@@ -109,21 +116,31 @@ export default function Sider() {
           defaultIsCollapsed={true}
         />
       </div>
-      <div className="pb-12 flex flex-col justify-center items-center">
-        <motion.div
-          whileHover={{ rotate: 360 }} // 当鼠标悬停在上面时放大1.5倍并旋转360度
-          transition={{ duration: 0.5, ease: 'easeOut' }} // 过渡效果
-          onClick={onOpenGithub}
-          className="w-11 h-9 mt-2 flex justify-center items-center cursor-pointer"
+      <div className="pb-2 flex flex-col justify-center items-center">
+        <Dropdown
+          className="w-40"
+          trigger={'click'}
+          position={'rightBottom'}
+          clickToHide={true}
+          render={
+            <Dropdown.Menu>
+              <Dropdown.Item icon={<IconSetting />} onClick={onOpenSetting}>
+                设置
+              </Dropdown.Item>
+              <Dropdown.Item icon={<IconUpload />} onClick={onCheckUpdate}>
+                检查更新...
+              </Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item icon={<IconUploadError />} onClick={onOpenAbout}>
+                关于
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          }
         >
-          <IconGithubLogo style={{ color: 'var(--semi-color-text-2)' }} size="large" />
-        </motion.div>
-        <div
-          onClick={onOpenSetting}
-          className="w-11 h-9 mt-2 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer"
-        >
-          <IconSetting style={{ color: 'var(--semi-color-text-2)' }} size="large" />
-        </div>
+          <div className="w-11 h-9 mt-2 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer">
+            <IconSetting style={{ color: 'var(--semi-color-text-2)' }} size="large" />
+          </div>
+        </Dropdown>
         <div
           onClick={switchMode}
           className="w-11 h-9 mt-2 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer position-relative"
@@ -146,12 +163,14 @@ export default function Sider() {
             <IconSun style={{ color: 'var(--semi-color-text-2)' }} size="large" />
           </motion.div>
         </div>
-        <div
-          onClick={onOpenAbout}
-          className="w-11 h-9 mt-2 flex justify-center items-center hover:bg-custom-hover rounded cursor-pointer"
+        <motion.div
+          whileHover={{ rotate: 360 }} // 当鼠标悬停在上面时放大1.5倍并旋转360度
+          transition={{ duration: 0.5, ease: 'easeOut' }} // 过渡效果
+          onClick={onOpenGithub}
+          className="w-11 h-9 mt-2 flex justify-center items-center cursor-pointer"
         >
-          <IconInfoCircle style={{ color: 'var(--semi-color-text-2)' }} size="large" />
-        </div>
+          <IconGithubLogo style={{ color: 'var(--semi-color-text-2)' }} size="large" />
+        </motion.div>
       </div>
       <Preferences visible={settingsVisible} setVisible={setSettingsVisible} />
       <About visible={aboutVisible} setVisible={setAboutVisible} />
