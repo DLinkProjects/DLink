@@ -9,7 +9,6 @@ import {
   Card,
   Dropdown,
   Descriptions,
-  Tag,
 } from '@douyinfe/semi-ui';
 import {
   IconServer,
@@ -23,6 +22,7 @@ import {
   IconTick,
   IconLink,
   IconSpin,
+  IconRefresh,
 } from '@douyinfe/semi-icons';
 import React, { useEffect, useState } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
@@ -37,6 +37,7 @@ import { Connect, GetImageList, GetServerSummary } from '@wailsApp/go/services/D
 import { entity } from '@wailsApp/go/models';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
+import { motion } from 'framer-motion';
 
 export default function Servers() {
   const { Column } = Table;
@@ -343,7 +344,6 @@ export default function Servers() {
             showClear
             showFilteredOnly={true}
             renderFullLabel={renderLabel}
-            // onExpand={(_, expanded) => setFolderStatus(expanded.expanded)}
           />
           <div
             className="flex flex-row h-12 flex-shrink-0 items-center justify-between"
@@ -373,8 +373,8 @@ export default function Servers() {
       <div className="flex flex-grow h-full w-full">
         {connected ? (
           <div className="overflow-auto max-h-full w-full">
-            <div className="ml-4 mt-4 mr-4 mb-1">
-              <Card>
+            <div className="ml-4 mt-4 mr-4 mb-4">
+              <Card bodyStyle={{ padding: 12 }}>
                 <div className="flex flex-row gap-4 m-4">
                   <Descriptions className="basis-1/5">
                     <Descriptions.Item itemKey="容器数">{serverSummary?.containers}</Descriptions.Item>
@@ -403,20 +403,41 @@ export default function Servers() {
                 </div>
               </Card>
             </div>
-            <div className="ml-4 mt-4 mr-4 mb-3">
-              <Card title="Docker Images">
+            <div className="ml-4 mt-4 mr-4 mb-4">
+              <Card
+                style={{
+                  height: 'calc(100vh - 294px)',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+                title="Docker Images"
+                bodyStyle={{ padding: 0 }}
+              >
                 {/* 表格组件 */}
-                <Table dataSource={imagesTableData} pagination={true}>
-                  <Column title="Repository" dataIndex="name" key="name" />
-                  <Column title="Tag" dataIndex="tag" key="tag" />
+                <Table
+                  dataSource={imagesTableData}
+                  pagination={false}
+                  sticky={{ top: 0 }}
+                  style={{ flex: 1, overflowY: 'scroll', maxHeight: 'calc(100vh - 358px)' }}
+                >
+                  <Column title="Repository" dataIndex="name" key="name" ellipsis />
+                  <Column title="Tag" dataIndex="tag" key="tag" ellipsis />
                   <Column title="Image ID" dataIndex="id" key="id" render={text => <TablesHash text={text} />} />
                   <Column
                     title="Created"
                     dataIndex="created"
                     key="created"
                     render={text => <TableCreated text={text} />}
+                    ellipsis
                   />
-                  <Column title="Size" dataIndex="size" key="size" render={text => <TableSize text={text} />} />
+                  <Column
+                    title="Size"
+                    dataIndex="size"
+                    key="size"
+                    render={text => <TableSize text={text} />}
+                    ellipsis
+                  />
                   <Column title="Actions" dataIndex="actions" key="actions" render={() => <TablesActions />} />
                 </Table>
               </Card>

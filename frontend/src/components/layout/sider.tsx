@@ -125,10 +125,10 @@ export default function Sider() {
           render={
             <Dropdown.Menu>
               <Dropdown.Item icon={<IconSetting />} onClick={onOpenSetting}>
-                设置
+                偏好设置
               </Dropdown.Item>
               <Dropdown.Item icon={<IconUpload />} onClick={onCheckUpdate}>
-                检查更新...
+                检查更新
               </Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item icon={<IconUploadError />} onClick={onOpenAbout}>
