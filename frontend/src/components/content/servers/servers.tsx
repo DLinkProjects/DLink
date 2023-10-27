@@ -372,8 +372,8 @@ export default function Servers() {
       </Resizable>
       <div className="flex flex-grow h-full w-full">
         {connected ? (
-          <div className="overflow-auto max-h-full w-full">
-            <div className="ml-4 mt-4 mr-4 mb-4">
+          <div className="flex flex-col overflow-hidden max-h-full w-full">
+            <div className="flex-grow-0 flex-shrink-0 mx-4 mt-4">
               <Card bodyStyle={{ padding: 12 }}>
                 <div className="flex flex-row gap-4 m-4">
                   <Descriptions className="basis-1/5">
@@ -403,23 +403,23 @@ export default function Servers() {
                 </div>
               </Card>
             </div>
-            <div className="ml-4 mt-4 mr-4 mb-4">
+            <div className="flex-1 position-relative min-h-0 m-4">
               <Card
                 style={{
-                  height: 'calc(100vh - 294px)',
+                  height: '100%',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
                 title="Docker Images"
-                bodyStyle={{ padding: 0 }}
+                bodyStyle={{ padding: 0, flex: '1', minHeight: '0', position: 'relative' }}
               >
                 {/* 表格组件 */}
                 <Table
                   dataSource={imagesTableData}
                   pagination={false}
                   sticky={{ top: 0 }}
-                  style={{ flex: 1, overflowY: 'scroll', maxHeight: 'calc(100vh - 358px)' }}
+                  style={{ overflowY: 'scroll', height: '100%' }}
                 >
                   <Column title="Repository" dataIndex="name" key="name" ellipsis />
                   <Column title="Tag" dataIndex="tag" key="tag" ellipsis />
