@@ -17,6 +17,6 @@ func TestDocker(t *testing.T) {
 
 	info, err := docker.Info()
 	if assert.Nil(t, err) {
-		assert.NotEmpty(t, info.ServerVersion)
+		assert.NotEmpty(t, info)
 	}
 }

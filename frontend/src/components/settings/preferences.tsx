@@ -1,7 +1,6 @@
-import { Empty, Modal } from '@douyinfe/semi-ui';
-import { Button } from '@douyinfe/semi-ui';
-import { IllustrationNoContent, IllustrationNoContentDark } from '@douyinfe/semi-illustrations';
+import { Modal, TreeSelect, Button } from '@douyinfe/semi-ui';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type PreferencesProps = {
   visible: boolean;
@@ -9,35 +8,71 @@ type PreferencesProps = {
 };
 
 export default function Preferences({ visible, setVisible }: PreferencesProps) {
+  const { i18n } = useTranslation();
+  const { t } = useTranslation();
+
+  const preference = t('preference');
+  const cancel = t('cancel');
+  const save = t('save');
+
   const onClose = () => {
     setVisible(false);
   };
 
+  const onSetLanguage = (value: string) => {
+    if (value === 'systemLang') {
+      const systemLang = window.navigator.languages[0];
+      i18n.changeLanguage(systemLang);
+    } else {
+      i18n.changeLanguage(value);
+    }
+    console.log(value);
+  };
+
+  const treeData = [
+    {
+      label: t('followSystem'),
+      value: 'systemLang',
+      key: '0',
+    },
+    {
+      label: '中文',
+      value: 'zh-CN',
+      key: '1',
+    },
+    {
+      label: 'English',
+      value: 'en',
+      key: '2',
+    },
+  ];
+
   const header = (
     <div>
-      <h5 className="text-lg">用户偏好设置</h5>
+      <h5 className="text-lg">{preference}</h5>
     </div>
   );
   const footer = (
     <div>
       <Button theme="light" type="tertiary" onClick={onClose}>
-        取消
+        {cancel}
       </Button>
       <Button theme="solid" type="primary">
-        保存
+        {save}
       </Button>
     </div>
   );
 
   return (
     <>
-      <Modal title="用户偏好设置" visible={visible} header={header} footer={footer}>
+      <Modal preventScroll={false} title={t('preference')} visible={visible} header={header} footer={footer}>
         <div className="flex items-center justify-center h-full flex-col">
-          <Empty
-            image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
-            darkModeImage={<IllustrationNoContentDark style={{ width: 150, height: 150 }} />}
-            title={'功能建设中'}
-            description="当前功能暂未开放，敬请期待。"
+          <TreeSelect
+            style={{ width: 300 }}
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            treeData={treeData}
+            placeholder={t('followSystem')}
+            onChange={value => onSetLanguage(value?.toString() || '')}
           />
         </div>
       </Modal>

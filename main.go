@@ -2,56 +2,74 @@ package main
 
 import (
 	"embed"
-	"runtime"
-
+	"fmt"
+	"github.com/DLinkProjects/DLink/backend"
 	"github.com/DLinkProjects/DLink/backend/consts"
+	"github.com/DLinkProjects/DLink/backend/pkg/base"
 	"github.com/DLinkProjects/DLink/backend/services"
-
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	"log"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
 
-func main() {
-	// Create an instance of the app structure
-	app := NewApp()
-	preference := services.NewPreferences()
+//go:embed build/appicon.png
+var icon []byte
 
-	// Create application with options
+func main() {
+	app := &backend.App{}
+
+	preferencesSrv := services.NewPreferences()
+	serverSrv := services.NewServer()
+	dockerSrv := services.NewDocker(serverSrv)
+
 	err := wails.Run(&options.App{
-		Title:     "DLink",
+		Title:     consts.ProjectName,
 		Width:     consts.DefaultWindowWidth,
 		Height:    consts.DefaultWindowHeight,
 		MinWidth:  consts.DefaultWindowWidth,
 		MinHeight: consts.DefaultWindowHeight,
+		Frameless: preferencesSrv.GetSysVersion() != "darwin",
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 0},
-		OnStartup:        app.startup,
-		Bind: []interface{}{
-			app,
-			preference,
+		OnStartup:        app.Startup,
+		OnShutdown:       app.Shutdown,
+		Bind: []any{
+			preferencesSrv,
+			serverSrv,
+			dockerSrv,
 		},
-		Frameless: runtime.GOOS != "darwin",
-		// windows specific options
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,
 			WindowIsTranslucent:               true,
 			DisableFramelessWindowDecorations: true,
 		},
-		// MacOS specific options
 		Mac: &mac.Options{
 			TitleBar: mac.TitleBarHiddenInset(),
+			About: &mac.AboutInfo{
+				Title:   fmt.Sprintf("%s %s", consts.ProjectName, base.Version),
+				Message: "Copyright © 2023 DLinkProjects All rights reserved",
+				Icon:    icon,
+			},
+			WebviewIsTransparent: false,
+			WindowIsTranslucent:  false,
+		},
+		Linux: &linux.Options{
+			Icon:                icon,
+			WebviewGpuPolicy:    linux.WebviewGpuPolicyOnDemand,
+			WindowIsTranslucent: true,
 		},
 	})
 
 	if err != nil {
-		println("Error:", err.Error())
+		log.Fatal(err)
 	}
 }

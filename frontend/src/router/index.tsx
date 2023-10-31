@@ -1,8 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '@/App';
-import Server from '@/components/content/server';
+import Servers from '@/components/content/servers/servers';
 import Container from '@/components/content/container';
 import Log from '@/components/content/log';
+import Dashboard from '@/components/content/dashboard';
+import Key from '@/components/content/key';
 
 const routers = createBrowserRouter([
   {
@@ -11,11 +13,15 @@ const routers = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Server />,
+        element: <Dashboard />,
       },
       {
-        path: '/server',
-        element: <Server />,
+        path: '/dashboard',
+        element: <Dashboard />,
+      },
+      {
+        path: '/servers',
+        element: <Servers />,
       },
       {
         path: '/container',
@@ -24,6 +30,10 @@ const routers = createBrowserRouter([
       {
         path: '/log',
         element: <Log />,
+      },
+      {
+        path: '/key',
+        element: <Key />,
       },
     ],
   },

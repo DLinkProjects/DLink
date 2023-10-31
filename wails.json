@@ -7,7 +7,6 @@
   "frontend:dev:watcher": "npm run dev",
   "frontend:dev:serverUrl": "auto",
   "author": {
-    "name": "qianmianyao",
-    "email": "zp1998421@gmail.com"
+    "name": "DLinkProjects"
   }
 }
