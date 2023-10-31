@@ -13,21 +13,11 @@ _✨ Lightweight Cross-Platform Remote Container Management Client ✨_
 </div>
 
 <p align="center">
-    <a href="https://goreportcard.com/report/github.com/DLinkProjects/DLink">
-        <img src="https://goreportcard.com/badge/github.com/DLinkProjects/DLink?style=flat-square" alt="go report">
-    </a>
-    <a href="https://github.com/DLinkProjects/DLink/releases">
-        <img src="https://img.shields.io/github/v/release/DLinkProjects/DLink?color=blueviolet&include_prereleases&style=flat-square" alt="release">
-    </a>
-    <a href="https://github.com/DLinkProjects/DLink/issues">
-        <img src="https://img.shields.io/github/issues/DLinkProjects/DLink?style=flat-square" alt="issues" />
-    </a>
-    <a href="https://github.com/DLinkProjects/DLink/blob/main/LICENSE">
-        <img src="https://img.shields.io/github/license/DLinkProjects/DLink?style=flat-square" alt="license">
-    </a>
-    <a href="https://discord.gg/eqBgfNWfZr">
-        <img src="https://img.shields.io/badge/discord-DLink-brightgreen.svg?style=flat-square" alt="discord">
-    </a>
+    <a href="https://goreportcard.com/report/github.com/DLinkProjects/DLink"><img src="https://goreportcard.com/badge/github.com/DLinkProjects/DLink?style=flat-square" alt="go report"></a>
+    <a href="https://github.com/DLinkProjects/DLink/releases"><img src="https://img.shields.io/github/v/release/DLinkProjects/DLink?color=blueviolet&include_prereleases&style=flat-square" alt="release"></a>
+    <a href="https://github.com/DLinkProjects/DLink/issues"><img src="https://img.shields.io/github/issues/DLinkProjects/DLink?style=flat-square" alt="issues" /></a>
+    <a href="https://github.com/DLinkProjects/DLink/blob/main/LICENSE"><img src="https://img.shields.io/github/license/DLinkProjects/DLink?style=flat-square" alt="license"></a>
+    <a href="https://discord.gg/eqBgfNWfZr"><img src="https://img.shields.io/badge/discord-DLink-brightgreen.svg?style=flat-square" alt="discord"></a>
 </p>
 
 <p align="center">
