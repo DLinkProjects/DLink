@@ -22,7 +22,6 @@ import {
   IconTick,
   IconLink,
   IconSpin,
-  IconRefresh,
 } from '@douyinfe/semi-icons';
 import React, { useEffect, useState } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
@@ -37,7 +36,6 @@ import { Connect, GetImageList, GetServerSummary } from '@wailsApp/go/services/D
 import { entity } from '@wailsApp/go/models';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
-import { motion } from 'framer-motion';
 
 export default function Servers() {
   const { Column } = Table;
@@ -164,7 +162,12 @@ export default function Servers() {
           render={
             <Dropdown.Menu>
               {isFolder && (
-                <Dropdown.Item icon={<IconLink />} onClick={() => onConnect(rightSelect)}>
+                <Dropdown.Item
+                  icon={<IconLink />}
+                  onClick={() => {
+                    onConnect(rightSelect);
+                  }}
+                >
                   连接服务
                 </Dropdown.Item>
               )}
