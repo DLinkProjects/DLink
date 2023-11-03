@@ -9,8 +9,17 @@ import {
   Card,
   Dropdown,
   Descriptions,
+  Tag,
+  Icon,
 } from '@douyinfe/semi-ui';
 import {
+  IconBolt,
+  IconInfoCircle,
+  IconAppCenter,
+  IconStop,
+  IconPause,
+  IconKanban,
+  IconPulse,
   IconServer,
   IconDelete,
   IconEdit,
@@ -22,6 +31,7 @@ import {
   IconTick,
   IconLink,
   IconSpin,
+  IconAlertTriangle,
 } from '@douyinfe/semi-icons';
 import React, { useEffect, useState } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
@@ -36,6 +46,13 @@ import { Connect, GetImageList, GetServerSummary } from '@wailsApp/go/services/D
 import { entity } from '@wailsApp/go/models';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
+import LinuxSVG from '@/assets/images/icons/linux.svg';
+import CentOSSVG from '@/assets/images/icons/centos.svg';
+import DebianSVG from '@/assets/images/icons/debian.svg';
+import CPUSVG from '@/assets/images/icons/cpu.svg';
+import MemorySVG from '@/assets/images/icons/memory.svg';
+import ArchSVG from '@/assets/images/icons/arch.svg';
+import _ from 'lodash';
 
 export default function Servers() {
   const { Column } = Table;
@@ -280,11 +297,11 @@ export default function Servers() {
   };
 
   // Table 列渲染
-  const TablesHash: React.FC<any> = ({ text }) => {
+  const TablesHash: React.FC<any> = ({ value }) => {
     return (
       <Paragraph
         copyable={{
-          content: text,
+          content: value,
           successTip: <IconTick />,
           icon: <IconCopy style={{ color: 'var(--semi-color-text-2)' }} />,
         }}
@@ -292,12 +309,12 @@ export default function Servers() {
         <Text
           ellipsis={{
             showTooltip: {
-              opts: { content: text },
+              opts: { content: value },
             },
           }}
           style={{ width: 80 }}
         >
-          {text}
+          {value}
         </Text>
       </Paragraph>
     );
@@ -314,12 +331,32 @@ export default function Servers() {
     );
   };
 
-  const TableCreated: React.FC<any> = ({ text }) => {
-    return <span>{moment.unix(text).format('YYYY-MM-DD HH:mm:ss')}</span>;
+  const TableCreated: React.FC<any> = ({ value }) => {
+    return <span>{moment.unix(value).format('YYYY-MM-DD HH:mm:ss')}</span>;
   };
 
-  const TableSize: React.FC<any> = ({ text }) => {
-    return <span>{prettyBytes(text)}</span>;
+  const TableUsed: React.FC<any> = ({ value }) => {
+    return <Tag color={value ? 'green' : 'blue'}>{value ? '已使用' : '未使用'}</Tag>;
+  };
+
+  const TableSize: React.FC<any> = ({ value }) => {
+    return <span>{prettyBytes(value)}</span>;
+  };
+
+  const IconForOSType: React.FC<{ value: string }> = ({ value }) => {
+    switch (value.toLowerCase()) {
+      case 'linux':
+        return <LinuxSVG />;
+      default:
+        return null;
+    }
+  };
+
+  const IconForOS: React.FC<{ value: string }> = ({ value }) => {
+    const v = value.toLowerCase();
+    if (v.includes('centos')) return <CentOSSVG />;
+    if (v.includes('debian')) return <DebianSVG />;
+    return null;
   };
 
   return (
@@ -380,28 +417,89 @@ export default function Servers() {
               <Card bodyStyle={{ padding: 12 }}>
                 <div className="flex flex-row gap-4 m-4">
                   <Descriptions className="basis-1/5">
-                    <Descriptions.Item itemKey="容器数">{serverSummary?.containers}</Descriptions.Item>
-                    <Descriptions.Item itemKey="运行中">{serverSummary?.containers_running}</Descriptions.Item>
-                    <Descriptions.Item itemKey="已暂停">{serverSummary?.containers_paused}</Descriptions.Item>
-                    <Descriptions.Item itemKey="已停止">{serverSummary?.containers_stopped}</Descriptions.Item>
+                    <Descriptions.Item itemKey="容器数">
+                      <Tag color="cyan" prefixIcon={<IconKanban />}>
+                        {serverSummary?.containers}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="运行中">
+                      <Tag color="green" prefixIcon={<IconPulse />}>
+                        {serverSummary?.containers_running}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="已暂停">
+                      <Tag color="yellow" prefixIcon={<IconPause />}>
+                        {serverSummary?.containers_paused}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="已停止">
+                      <Tag color="red" prefixIcon={<IconStop />}>
+                        {serverSummary?.containers_stopped}
+                      </Tag>
+                    </Descriptions.Item>
                   </Descriptions>
                   <Descriptions className="basis-1/5">
-                    <Descriptions.Item itemKey="警告数">{serverSummary?.warns}</Descriptions.Item>
-                    <Descriptions.Item itemKey="镜像数">{serverSummary?.images}</Descriptions.Item>
-                    <Descriptions.Item itemKey="引擎版本">{serverSummary?.docker_ver}</Descriptions.Item>
-                    <Descriptions.Item itemKey="存储驱动">{serverSummary?.driver}</Descriptions.Item>
+                    <Descriptions.Item itemKey="警告数">
+                      <Tag color="red" prefixIcon={<IconAlertTriangle />}>
+                        {serverSummary?.warns}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="镜像数">
+                      <Tag color="cyan" prefixIcon={<IconAppCenter />}>
+                        {serverSummary?.images}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="引擎版本">
+                      <Tag color="cyan" prefixIcon={<IconInfoCircle />}>
+                        {serverSummary?.docker_ver}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="存储驱动">
+                      <Tag color="cyan" prefixIcon={<IconBolt />}>
+                        {serverSummary?.driver}
+                      </Tag>
+                    </Descriptions.Item>
                   </Descriptions>
                   <Descriptions className="basis-1/5">
-                    <Descriptions.Item itemKey="主机名">{serverSummary?.hostname}</Descriptions.Item>
-                    <Descriptions.Item itemKey="处理器">{serverSummary?.num_cpu}</Descriptions.Item>
-                    <Descriptions.Item itemKey="内存">{prettyBytes(serverSummary?.mem_total || 0)}</Descriptions.Item>
-                    <Descriptions.Item itemKey="架构">{serverSummary?.arch}</Descriptions.Item>
+                    <Descriptions.Item itemKey="处理器">
+                      <Tag color="cyan" prefixIcon={<Icon svg={<CPUSVG />} />}>
+                        {serverSummary?.num_cpu}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="系统内存">
+                      <Tag color="cyan" prefixIcon={<Icon svg={<MemorySVG />} />}>
+                        {prettyBytes(serverSummary?.mem_total || 0)}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="系统架构">
+                      <Tag color="cyan" prefixIcon={<Icon svg={<ArchSVG />} />}>
+                        {serverSummary?.arch}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="系统类型">
+                      <Tag
+                        color="cyan"
+                        prefixIcon={<Icon svg={<IconForOSType value={serverSummary?.os_type || 'unknow'} />} />}
+                      >
+                        {_.upperFirst(serverSummary?.os_type)}
+                      </Tag>
+                    </Descriptions.Item>
                   </Descriptions>
                   <Descriptions className="basis-2/5">
-                    <Descriptions.Item itemKey="操作系统">{serverSummary?.os}</Descriptions.Item>
-                    <Descriptions.Item itemKey="系统版本">{serverSummary?.os_ver}</Descriptions.Item>
-                    <Descriptions.Item itemKey="内核版本">{serverSummary?.kernel_ver}</Descriptions.Item>
-                    <Descriptions.Item itemKey="系统类型">{serverSummary?.os_type}</Descriptions.Item>
+                    <Descriptions.Item itemKey="主机名">
+                      <Tag color="cyan">{serverSummary?.hostname}</Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="系统版本">
+                      <Tag color="cyan">{serverSummary?.os_ver}</Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="操作系统">
+                      <Tag color="cyan" prefixIcon={<Icon svg={<IconForOS value={serverSummary?.os || 'unknow'} />} />}>
+                        {serverSummary?.os}
+                      </Tag>
+                    </Descriptions.Item>
+                    <Descriptions.Item itemKey="内核版本">
+                      <Tag color="cyan">{serverSummary?.kernel_ver}</Tag>
+                    </Descriptions.Item>
                   </Descriptions>
                 </div>
               </Card>
@@ -424,22 +522,47 @@ export default function Servers() {
                   sticky={{ top: 0 }}
                   style={{ overflowY: 'scroll', height: '100%' }}
                 >
-                  <Column title="Repository" dataIndex="name" key="name" ellipsis />
-                  <Column title="Tag" dataIndex="tag" key="tag" ellipsis />
-                  <Column title="Image ID" dataIndex="id" key="id" render={text => <TablesHash text={text} />} />
+                  <Column
+                    title="Repository"
+                    dataIndex="name"
+                    key="name"
+                    ellipsis
+                    render={value => <Typography.Text ellipsis={{ showTooltip: true }}>{value}</Typography.Text>}
+                  />
+                  <Column
+                    title="Tag"
+                    dataIndex="tag"
+                    key="tag"
+                    ellipsis
+                    render={value => <Typography.Text ellipsis={{ showTooltip: true }}>{value}</Typography.Text>}
+                  />
+                  <Column
+                    className="whitespace-nowrap"
+                    title="Image ID"
+                    dataIndex="id"
+                    key="id"
+                    render={value => <TablesHash value={value} />}
+                  />
                   <Column
                     title="Created"
                     dataIndex="created"
                     key="created"
-                    render={text => <TableCreated text={text} />}
+                    render={value => <TableCreated value={value} />}
                     ellipsis
                   />
                   <Column
                     title="Size"
                     dataIndex="size"
                     key="size"
-                    render={text => <TableSize text={text} />}
+                    render={value => <TableSize value={value} />}
                     ellipsis
+                  />
+                  <Column
+                    title="Used"
+                    dataIndex="used"
+                    key="used"
+                    ellipsis
+                    render={value => <TableUsed value={value} />}
                   />
                   <Column title="Actions" dataIndex="actions" key="actions" render={() => <TablesActions />} />
                 </Table>

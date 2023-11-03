@@ -2,9 +2,10 @@ package services
 
 import (
 	"context"
+	"strings"
+
 	"github.com/DLinkProjects/DLink/backend/entity"
 	"github.com/DLinkProjects/DLink/backend/pkg/docker"
-	"strings"
 )
 
 type Docker struct {
@@ -62,6 +63,11 @@ func (d *Docker) GetContainerList() (containers []*entity.Container, err error) 
 }
 
 func (d *Docker) GetImageList() (images []*entity.Image, err error) {
+	containers, err := d.GetContainerList()
+	if err != nil {
+		return nil, err
+	}
+
 	list, err := d.DockerCLI.ImageList()
 	if err != nil {
 		return nil, err
@@ -76,9 +82,19 @@ func (d *Docker) GetImageList() (images []*entity.Image, err error) {
 			Tag:     repoTags[1],
 			Size:    v.Size,
 			Created: v.Created,
+			Used:    imageUsed(containers, v.RepoTags),
 		})
 	}
 	return
+}
+
+func imageUsed(containers []*entity.Container, repoTags []string) bool {
+	for _, v := range containers {
+		for _, j := range repoTags {
+			return v.Image == j
+		}
+	}
+	return false
 }
 
 func (d *Docker) GetServerSummary() (*entity.Summary, error) {
