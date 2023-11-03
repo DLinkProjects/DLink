@@ -34,6 +34,7 @@ type Image struct {
 	ID      string `json:"id"`
 	Created int64  `json:"created"`
 	Size    int64  `json:"size"`
+	Used    bool   `json:"used"`
 }
 
 type Summary struct {

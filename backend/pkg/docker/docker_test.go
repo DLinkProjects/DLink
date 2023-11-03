@@ -2,8 +2,9 @@ package docker
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDocker(t *testing.T) {
@@ -15,7 +16,7 @@ func TestDocker(t *testing.T) {
 	).Connect()
 	assert.Nil(t, err)
 
-	info, err := docker.Info()
+	info, err := docker.ImageList()
 	if assert.Nil(t, err) {
 		assert.NotEmpty(t, info)
 	}
