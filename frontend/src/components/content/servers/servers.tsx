@@ -53,21 +53,21 @@ import CPUSVG from '@/assets/images/icons/cpu.svg';
 import MemorySVG from '@/assets/images/icons/memory.svg';
 import ArchSVG from '@/assets/images/icons/arch.svg';
 import _ from 'lodash';
+import { useStore } from '@/store';
 
 export default function Servers() {
   const { Column } = Table;
   const { Paragraph, Text } = Typography;
   const { t } = useTranslation();
-  const [connected, setConnected] = useState<boolean>(false);
   const [imagesTableData, setImagesTableData] = useState<entity.Image[]>([]);
   const [serverSummary, setServerSummary] = useState<entity.Summary>();
   const [folderStatus, setFolderStatus] = useState(false);
-  const [selectedLabel, setSelectedLabel] = useState<string>('');
   const [createServerVisible, setCreateServerVisible] = useState(false);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [rightSelect, setRightSelect] = useState<number>(0);
   const [connectLoading, setConnectLoading] = useState(false);
+  const store = useStore();
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
@@ -114,7 +114,7 @@ export default function Servers() {
       .then(() => {
         onGetServerSummary();
         onGetImagesList();
-        setConnected(true);
+        store.setConnected();
       })
       .catch(e => {
         toast.error(`服务器连接失败：${e}`);
@@ -124,10 +124,18 @@ export default function Servers() {
       });
   };
 
+  useEffect(() => {
+    if (store.connected) {
+      setServerSummary(store.summary as entity.Summary);
+      setImagesTableData(store.images);
+    }
+  }, [store.connected]);
+
   const onGetServerSummary = () => {
     GetServerSummary()
       .then(summary => {
         setServerSummary(summary);
+        store.setSummary(summary);
       })
       .catch(e => {
         toast.error(`服务器信息获取失败：${e}`);
@@ -138,6 +146,7 @@ export default function Servers() {
     GetImageList()
       .then(images => {
         setImagesTableData(images);
+        store.setImages(images);
       })
       .catch(e => {
         toast.error(`镜像列表获取失败：${e}`);
@@ -164,11 +173,9 @@ export default function Servers() {
         className={`${className} flex justify-between h-[30px]`}
         onClick={v => {
           onCheck(v);
-          setSelectedLabel(label?.toString() || '');
         }}
         onContextMenu={v => {
           onCheck(v);
-          setSelectedLabel(label?.toString() || '');
           setRightSelect(id);
         }}
       >
@@ -183,6 +190,7 @@ export default function Servers() {
                   icon={<IconLink />}
                   onClick={() => {
                     onConnect(rightSelect);
+                    store.setSelectServer(label?.toString() || '');
                   }}
                 >
                   连接服务
@@ -199,7 +207,7 @@ export default function Servers() {
             {isFolder ? null : expandIcon}
             {isFolder ? (
               <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
-                {label === selectedLabel ? (
+                {label === store.selecteServer ? (
                   connectLoading ? (
                     <IconSpin spin style={{ color: 'var(--semi-color-info)' }} />
                   ) : (
@@ -411,7 +419,7 @@ export default function Servers() {
         </div>
       </Resizable>
       <div className="flex flex-grow h-full w-full">
-        {connected ? (
+        {store.connected ? (
           <div className="flex flex-col overflow-hidden max-h-full w-full">
             <div className="flex-grow-0 flex-shrink-0 mx-4 mt-4">
               <Card bodyStyle={{ padding: 12 }}>
