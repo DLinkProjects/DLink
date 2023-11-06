@@ -49,9 +49,6 @@ import prettyBytes from 'pretty-bytes';
 import LinuxSVG from '@/assets/images/icons/linux.svg';
 import CentOSSVG from '@/assets/images/icons/centos.svg';
 import DebianSVG from '@/assets/images/icons/debian.svg';
-import CPUSVG from '@/assets/images/icons/cpu.svg';
-import MemorySVG from '@/assets/images/icons/memory.svg';
-import ArchSVG from '@/assets/images/icons/arch.svg';
 import _ from 'lodash';
 import { useStore } from '@/store';
 
@@ -469,21 +466,23 @@ export default function Servers() {
                     </Descriptions.Item>
                   </Descriptions>
                   <Descriptions className="basis-1/5">
+                    <Descriptions.Item itemKey="主机名">
+                      <Tag color="cyan">{serverSummary?.hostname}</Tag>
+                    </Descriptions.Item>
                     <Descriptions.Item itemKey="处理器">
-                      <Tag color="cyan" prefixIcon={<Icon svg={<CPUSVG />} />}>
-                        {serverSummary?.num_cpu}
-                      </Tag>
+                      <Tag color="cyan">{serverSummary?.num_cpu} Core</Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="系统内存">
-                      <Tag color="cyan" prefixIcon={<Icon svg={<MemorySVG />} />}>
-                        {prettyBytes(serverSummary?.mem_total || 0)}
-                      </Tag>
+                      <Tag color="cyan">{prettyBytes(serverSummary?.mem_total || 0)}</Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="系统架构">
-                      <Tag color="cyan" prefixIcon={<Icon svg={<ArchSVG />} />}>
-                        {serverSummary?.arch}
-                      </Tag>
+                      <Tag color="cyan">{serverSummary?.arch}</Tag>
                     </Descriptions.Item>
+                  </Descriptions>
+                  <Descriptions className="basis-2/5">
+                    <Descriptions.Item itemKey="系统版本">
+                      <Tag color="cyan">{serverSummary?.os_ver}</Tag>
+                    </Descriptions.Item>{' '}
                     <Descriptions.Item itemKey="系统类型">
                       <Tag
                         color="cyan"
@@ -491,14 +490,6 @@ export default function Servers() {
                       >
                         {_.upperFirst(serverSummary?.os_type)}
                       </Tag>
-                    </Descriptions.Item>
-                  </Descriptions>
-                  <Descriptions className="basis-2/5">
-                    <Descriptions.Item itemKey="主机名">
-                      <Tag color="cyan">{serverSummary?.hostname}</Tag>
-                    </Descriptions.Item>
-                    <Descriptions.Item itemKey="系统版本">
-                      <Tag color="cyan">{serverSummary?.os_ver}</Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="操作系统">
                       <Tag color="cyan" prefixIcon={<Icon svg={<IconForOS value={serverSummary?.os || 'unknow'} />} />}>
@@ -520,7 +511,6 @@ export default function Servers() {
                   display: 'flex',
                   flexDirection: 'column',
                 }}
-                title="Docker Images"
                 bodyStyle={{ padding: 0, flex: '1', minHeight: '0', position: 'relative' }}
               >
                 {/* 表格组件 */}
