@@ -33,7 +33,7 @@ import {
   IconSpin,
   IconAlertTriangle,
 } from '@douyinfe/semi-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
@@ -65,6 +65,8 @@ export default function Servers() {
   const [rightSelect, setRightSelect] = useState<number>(0);
   const [connectLoading, setConnectLoading] = useState(false);
   const store = useStore();
+  const previousSummaryRef = useRef<entity.Summary | null>(null);
+  const previousImagesRef = useRef<entity.Image[]>();
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
@@ -123,11 +125,20 @@ export default function Servers() {
 
   useEffect(() => {
     onGetServers();
-    if (store.connected) {
-      setServerSummary(store.summary as entity.Summary);
-      setImagesTableData(store.images);
-    }
   }, []);
+
+  useEffect(() => {
+    if (store.connected) {
+      if (store.summary !== previousSummaryRef.current) {
+        setServerSummary(store.summary as entity.Summary);
+        previousSummaryRef.current = store.summary;
+      }
+      if (store.images !== previousImagesRef.current) {
+        setImagesTableData(store.images);
+        previousImagesRef.current = store.images;
+      }
+    }
+  }, [store.connected, store.summary, store.images]);
 
   const onGetServerSummary = () => {
     GetServerSummary()
