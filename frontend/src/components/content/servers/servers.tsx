@@ -122,11 +122,12 @@ export default function Servers() {
   };
 
   useEffect(() => {
+    onGetServers();
     if (store.connected) {
       setServerSummary(store.summary as entity.Summary);
       setImagesTableData(store.images);
     }
-  }, [store.connected]);
+  }, []);
 
   const onGetServerSummary = () => {
     GetServerSummary()
@@ -149,10 +150,6 @@ export default function Servers() {
         toast.error(`镜像列表获取失败：${e}`);
       });
   };
-
-  useEffect(() => {
-    onGetServers();
-  }, []);
 
   const Folder: React.FC<any> = ({ showIcon }) => {
     if (showIcon) {
