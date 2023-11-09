@@ -50,6 +50,7 @@ import CentOSSVG from '@/assets/images/icons/centos.svg';
 import DebianSVG from '@/assets/images/icons/debian.svg';
 import lodash from 'lodash';
 import { useStore } from '@/store';
+import WarnInfoComponents from './warnInfo';
 
 export default function Servers() {
   const { Column } = Table;
@@ -59,9 +60,11 @@ export default function Servers() {
   const [folderStatus, setFolderStatus] = useState(false);
   const [createServerVisible, setCreateServerVisible] = useState(false);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
+  const [warnInfoVisible, setWarnInfoVisible] = useState(false);
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [rightSelect, setRightSelect] = useState<number>(0);
   const [connectLoading, setConnectLoading] = useState(false);
+  const [warnInfo, setWarnInfo] = useState<string[]>([]);
   const { selecteServer, summary, images, setSelectServer, setSummary, setImages } = useStore();
 
   const serverListStyle = {
@@ -433,8 +436,15 @@ export default function Servers() {
                   </Descriptions>
                   <Descriptions className="basis-1/5">
                     <Descriptions.Item itemKey="警告数">
-                      <Tag color="red" prefixIcon={<IconAlertTriangle />}>
-                        {summary?.warns}
+                      <Tag
+                        color="red"
+                        prefixIcon={<IconAlertTriangle />}
+                        onClick={() => {
+                          setWarnInfoVisible(true);
+                          setWarnInfo(summary?.warns);
+                        }}
+                      >
+                        {summary?.warns.length}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="镜像数">
@@ -576,6 +586,7 @@ export default function Servers() {
         setVisible={setCreateGroupVisible}
         onGetServers={onGetServers}
       />
+      <WarnInfoComponents visible={warnInfoVisible} setVisible={setWarnInfoVisible} warnInfo={warnInfo} />
     </div>
   );
 }

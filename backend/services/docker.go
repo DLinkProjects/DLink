@@ -126,7 +126,7 @@ func (d *Docker) GetServerSummary() (*entity.Summary, error) {
 		KernelVer:         info.KernelVersion,
 		OSType:            info.OSType,
 		DockerVer:         info.ServerVersion,
-		Warns:             len(info.Warnings),
+		Warns:             info.Warnings,
 		Driver:            info.Driver,
 		Images:            info.Images,
 	}, nil
