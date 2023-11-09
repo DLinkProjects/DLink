@@ -108,7 +108,7 @@ export default function Servers() {
     setConnectLoading(true);
     Connect(nodeId)
       .then(() => {
-        onGetsummary();
+        onGetServerSummary();
         onGetImagesList();
       })
       .catch(e => {
@@ -123,7 +123,7 @@ export default function Servers() {
     onGetServers();
   });
 
-  const onGetsummary = () => {
+  const onGetServerSummary = () => {
     GetServerSummary()
       .then(summary => {
         setSummary(summary);
