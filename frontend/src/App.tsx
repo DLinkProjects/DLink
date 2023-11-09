@@ -1,6 +1,5 @@
 import Layout from './components/layout/layout';
 import { Trans } from 'react-i18next';
-import React from 'react';
 import { Toaster } from 'react-hot-toast';
 
 export default function App() {

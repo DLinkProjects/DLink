@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"strings"
 )
 
 type Config struct {
@@ -46,6 +47,12 @@ func (a *Adapter) Connect() (*Adapter, error) {
 	if err != nil {
 		return nil, err
 	}
+	// 尝试 ping Docker 守护进程来验证连接是否成功
+	_, err = cli.Ping(a.ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	a.cli = cli
 	return a, nil
 }
