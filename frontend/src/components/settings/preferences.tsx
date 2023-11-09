@@ -26,7 +26,6 @@ export default function Preferences({ visible, setVisible }: PreferencesProps) {
     } else {
       i18n.changeLanguage(value);
     }
-    console.log(value);
   };
 
   const treeData = [

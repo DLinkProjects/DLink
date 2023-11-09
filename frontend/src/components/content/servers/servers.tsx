@@ -33,7 +33,7 @@ import {
   IconSpin,
   IconAlertTriangle,
 } from '@douyinfe/semi-icons';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { OnDragProps, RenderFullLabelProps, TreeNodeData } from '@douyinfe/semi-ui/lib/es/tree';
 import { IllustrationConstruction, IllustrationConstructionDark } from '@douyinfe/semi-illustrations';
 import { Resizable } from 're-resizable';
@@ -43,35 +43,32 @@ import { GetServers } from '@wailsApp/go/services/Server';
 import CreateGroupComponents from '@/components/content/servers/createGroup';
 import toast from 'react-hot-toast';
 import { Connect, GetImageList, GetServerSummary } from '@wailsApp/go/services/Docker';
-import { entity } from '@wailsApp/go/models';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
 import LinuxSVG from '@/assets/images/icons/linux.svg';
 import CentOSSVG from '@/assets/images/icons/centos.svg';
 import DebianSVG from '@/assets/images/icons/debian.svg';
-import _ from 'lodash';
+import lodash from 'lodash';
 import { useStore } from '@/store';
 
 export default function Servers() {
   const { Column } = Table;
   const { Paragraph, Text } = Typography;
   const { t } = useTranslation();
-  const [imagesTableData, setImagesTableData] = useState<entity.Image[]>([]);
-  const [serverSummary, setServerSummary] = useState<entity.Summary>();
+
   const [folderStatus, setFolderStatus] = useState(false);
   const [createServerVisible, setCreateServerVisible] = useState(false);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [rightSelect, setRightSelect] = useState<number>(0);
   const [connectLoading, setConnectLoading] = useState(false);
-  const store = useStore();
-  const previousSummaryRef = useRef<entity.Summary | null>(null);
-  const previousImagesRef = useRef<entity.Image[]>();
+  const { selecteServer, summary, images, setSelectServer, setSummary, setImages } = useStore();
 
   const serverListStyle = {
     backgroundColor: 'var(--semi-color-bg-0)',
     borderRight: '1px solid var(--semi-color-border)',
   };
+
   const onOpenCreateServer = () => {
     setCreateServerVisible(true);
   };
@@ -111,9 +108,8 @@ export default function Servers() {
     setConnectLoading(true);
     Connect(nodeId)
       .then(() => {
-        onGetServerSummary();
+        onGetsummary();
         onGetImagesList();
-        store.setConnected();
       })
       .catch(e => {
         toast.error(`服务器连接失败：${e}`);
@@ -125,26 +121,12 @@ export default function Servers() {
 
   useEffect(() => {
     onGetServers();
-  }, []);
+  });
 
-  useEffect(() => {
-    if (store.connected) {
-      if (store.summary !== previousSummaryRef.current) {
-        setServerSummary(store.summary as entity.Summary);
-        previousSummaryRef.current = store.summary;
-      }
-      if (store.images !== previousImagesRef.current) {
-        setImagesTableData(store.images);
-        previousImagesRef.current = store.images;
-      }
-    }
-  }, [store.connected, store.summary, store.images]);
-
-  const onGetServerSummary = () => {
+  const onGetsummary = () => {
     GetServerSummary()
       .then(summary => {
-        setServerSummary(summary);
-        store.setSummary(summary);
+        setSummary(summary);
       })
       .catch(e => {
         toast.error(`服务器信息获取失败：${e}`);
@@ -154,8 +136,7 @@ export default function Servers() {
   const onGetImagesList = () => {
     GetImageList()
       .then(images => {
-        setImagesTableData(images);
-        store.setImages(images);
+        setImages(images);
       })
       .catch(e => {
         toast.error(`镜像列表获取失败：${e}`);
@@ -195,7 +176,7 @@ export default function Servers() {
                   icon={<IconLink />}
                   onClick={() => {
                     onConnect(rightSelect);
-                    store.setSelectServer(label?.toString() || '');
+                    setSelectServer(label?.toString() || '');
                   }}
                 >
                   连接服务
@@ -212,7 +193,7 @@ export default function Servers() {
             {isFolder ? null : expandIcon}
             {isFolder ? (
               <div className="ml-5 mr-1 flex" style={{ color: 'var(--semi-color-text-2)' }}>
-                {label === store.selecteServer ? (
+                {label === selecteServer ? (
                   connectLoading ? (
                     <IconSpin spin style={{ color: 'var(--semi-color-info)' }} />
                   ) : (
@@ -306,7 +287,6 @@ export default function Servers() {
 
     // 更新 state 中的 treeData
     setTreeData(newData);
-    console.log(info);
   };
 
   // Table 列渲染
@@ -424,7 +404,7 @@ export default function Servers() {
         </div>
       </Resizable>
       <div className="flex flex-grow h-full w-full">
-        {store.connected ? (
+        {selecteServer ? (
           <div className="flex flex-col overflow-hidden max-h-full w-full">
             <div className="flex-grow-0 flex-shrink-0 mx-4 mt-4">
               <Card bodyStyle={{ padding: 12 }}>
@@ -432,80 +412,80 @@ export default function Servers() {
                   <Descriptions className="basis-1/5">
                     <Descriptions.Item itemKey="容器数">
                       <Tag color="cyan" prefixIcon={<IconKanban />}>
-                        {serverSummary?.containers}
+                        {summary?.containers}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="运行中">
                       <Tag color="green" prefixIcon={<IconPulse />}>
-                        {serverSummary?.containers_running}
+                        {summary?.containers_running}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="已暂停">
                       <Tag color="yellow" prefixIcon={<IconPause />}>
-                        {serverSummary?.containers_paused}
+                        {summary?.containers_paused}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="已停止">
                       <Tag color="red" prefixIcon={<IconStop />}>
-                        {serverSummary?.containers_stopped}
+                        {summary?.containers_stopped}
                       </Tag>
                     </Descriptions.Item>
                   </Descriptions>
                   <Descriptions className="basis-1/5">
                     <Descriptions.Item itemKey="警告数">
                       <Tag color="red" prefixIcon={<IconAlertTriangle />}>
-                        {serverSummary?.warns}
+                        {summary?.warns}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="镜像数">
                       <Tag color="cyan" prefixIcon={<IconAppCenter />}>
-                        {serverSummary?.images}
+                        {summary?.images}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="引擎版本">
                       <Tag color="cyan" prefixIcon={<IconInfoCircle />}>
-                        {serverSummary?.docker_ver}
+                        {summary?.docker_ver}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="存储驱动">
                       <Tag color="cyan" prefixIcon={<IconBolt />}>
-                        {serverSummary?.driver}
+                        {summary?.driver}
                       </Tag>
                     </Descriptions.Item>
                   </Descriptions>
                   <Descriptions className="basis-1/5">
                     <Descriptions.Item itemKey="主机名">
-                      <Tag color="cyan">{serverSummary?.hostname}</Tag>
+                      <Tag color="cyan">{summary?.hostname}</Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="处理器">
-                      <Tag color="cyan">{serverSummary?.num_cpu} Core</Tag>
+                      <Tag color="cyan">{summary?.num_cpu} Core</Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="系统内存">
-                      <Tag color="cyan">{prettyBytes(serverSummary?.mem_total || 0)}</Tag>
+                      <Tag color="cyan">{prettyBytes(summary?.mem_total || 0)}</Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="系统架构">
-                      <Tag color="cyan">{serverSummary?.arch}</Tag>
+                      <Tag color="cyan">{summary?.arch}</Tag>
                     </Descriptions.Item>
                   </Descriptions>
                   <Descriptions className="basis-2/5">
                     <Descriptions.Item itemKey="系统版本">
-                      <Tag color="cyan">{serverSummary?.os_ver}</Tag>
+                      <Tag color="cyan">{summary?.os_ver}</Tag>
                     </Descriptions.Item>{' '}
                     <Descriptions.Item itemKey="系统类型">
                       <Tag
                         color="cyan"
-                        prefixIcon={<Icon svg={<IconForOSType value={serverSummary?.os_type || 'unknow'} />} />}
+                        prefixIcon={<Icon svg={<IconForOSType value={summary?.os_type || 'unknow'} />} />}
                       >
-                        {_.upperFirst(serverSummary?.os_type)}
+                        {lodash.upperFirst(summary?.os_type)}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="操作系统">
-                      <Tag color="cyan" prefixIcon={<Icon svg={<IconForOS value={serverSummary?.os || 'unknow'} />} />}>
-                        {serverSummary?.os}
+                      <Tag color="cyan" prefixIcon={<Icon svg={<IconForOS value={summary?.os || 'unknow'} />} />}>
+                        {summary?.os}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="内核版本">
-                      <Tag color="cyan">{serverSummary?.kernel_ver}</Tag>
+                      <Tag color="cyan">{summary?.kernel_ver}</Tag>
                     </Descriptions.Item>
                   </Descriptions>
                 </div>
@@ -523,7 +503,7 @@ export default function Servers() {
               >
                 {/* 表格组件 */}
                 <Table
-                  dataSource={imagesTableData}
+                  dataSource={images}
                   pagination={false}
                   sticky={{ top: 0 }}
                   style={{ overflowY: 'scroll', height: '100%' }}
