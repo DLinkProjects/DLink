@@ -1,7 +1,8 @@
 import { Button, Checkbox, Empty, Form, Modal, TabPane, Tabs } from '@douyinfe/semi-ui';
 import { entity } from '@wailsApp/go/models';
 import React, { useEffect, useRef, useState } from 'react';
-import { CreateServer, GetGroups, TestServerConnect } from '@wailsApp/go/services/Server';
+import { CreateServer, GetGroups } from '@wailsApp/go/services/Server';
+import { TestConnect } from '@wailsApp/go/services/Docker';
 import toast from 'react-hot-toast';
 import { IllustrationNoContent, IllustrationNoContentDark } from '@douyinfe/semi-illustrations';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ type AddServersProps = {
 export default function CreateServerComponents({ visible, setVisible, onGetServers }: AddServersProps) {
   const { t } = useTranslation();
   const { Option } = Form.Select;
-  const [sshKeyChoose, setSshKeyChoose] = useState(false);
+  const [tlsChoose, setTlsChoose] = useState(false);
   const [serverData, setServerData] = useState<entity.Server>();
   const [groupsSelect, setGroupsSelect] = useState<entity.Node[]>([]);
   const [testConnectLoading, setConnectLoading] = useState(false);
@@ -46,7 +47,7 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
     if (formApiRef.current) {
       formApiRef.current.validate().then((values: { serverData: entity.Server }) => {
         setConnectLoading(true);
-        TestServerConnect(values.serverData)
+        TestConnect(values.serverData)
           .then(() => {
             toast.success('测试连接成功');
           })
@@ -101,14 +102,6 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
     >
       <Tabs type="line">
         <TabPane tab="常规配置" itemKey="1">
-          <Checkbox
-            checked={sshKeyChoose}
-            className="pt-2"
-            onChange={e => setSshKeyChoose((e.target as HTMLInputElement).checked)}
-            aria-label="ssh key"
-          >
-            使用 SSH 秘钥登录
-          </Checkbox>
           <Form getFormApi={getFormApi} onValueChange={values => setServerData(values.serverData)}>
             <Form.Input
               className="w-full"
@@ -175,43 +168,30 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
                   label="端口"
                   noLabel={true}
                   style={{ width: 176 }}
-                  initValue={22}
+                  initValue={2375}
                 />
               </div>
             </div>
-            <Form.Input
-              rules={[
-                {
-                  required: true,
-                  message: '用户名不可为空',
-                },
-              ]}
-              field="serverData.username"
-              label="用户名"
-              style={{ width: '100%' }}
-              placeholder="请输入 SSH 用户名"
-            />
-            {sshKeyChoose ? (
+            <Checkbox
+              checked={tlsChoose}
+              className="pt-2"
+              onChange={e => setTlsChoose((e.target as HTMLInputElement).checked)}
+              aria-label="cert"
+            >
+              启用 TLS 连接
+            </Checkbox>
+            {tlsChoose && (
               <Form.Select
-                rules={[{ required: sshKeyChoose, message: '秘钥不可为空' }]}
+                rules={[{ required: tlsChoose, message: '证书不可为空' }]}
                 className="w-full"
-                field="key"
-                label="秘钥"
-                placeholder="请选择 SSH 秘钥"
+                field="cert"
+                label="证书"
+                placeholder="请选择 TLS 证书"
               >
                 <Option value="admin">127.0.0.1</Option>
                 <Option value="user">192.168.1.1</Option>
                 <Option value="guest">192.168.0.1</Option>
               </Form.Select>
-            ) : (
-              <Form.Input
-                rules={[{ required: !sshKeyChoose, message: '密码不可为空' }]}
-                field="serverData.password"
-                mode="password"
-                label="密码"
-                style={{ width: '100%' }}
-                placeholder="请输入 SSH 密码"
-              />
             )}
           </Form>
         </TabPane>

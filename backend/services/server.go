@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/DLinkProjects/DLink/backend/entity"
 	"github.com/DLinkProjects/DLink/backend/global"
-	"github.com/DLinkProjects/DLink/backend/pkg/ssh"
 	"strings"
 )
 
@@ -29,7 +28,7 @@ func (s *Server) CreateServer(r entity.Server) error {
 		return err
 	}
 
-	_, err = global.Database.Exec("INSERT INTO servers(host, port, username, password, node_id) VALUES (?, ?, ?, ?, ?)", r.Host, r.Port, r.Username, r.Password, nodeId)
+	_, err = global.Database.Exec("INSERT INTO servers(host, port, node_id) VALUES (?, ?, ?)", r.Host, r.Port, nodeId)
 	return err
 }
 
@@ -81,28 +80,4 @@ func (s *Server) QueryServerByNodeID(nodeId uint) (*entity.Server, error) {
 		return nil, err
 	}
 	return &server, nil
-}
-
-// TestServerConnect 测试服务器连接
-func (s *Server) TestServerConnect(r entity.Server) error {
-	conf := &ssh.Config{
-		AuthType: ssh.PassAuth,
-		Host:     r.Host,
-		Port:     r.Port,
-		User:     r.Username,
-		Password: r.Password,
-		// PrivateKey:         r.PrivateKey,
-		// PrivateKeyPassword: r.PrivateKeyPassword,
-	}
-	if r.PKeyID != 0 {
-		// TODO: 查询密钥填充到 conf
-	}
-	// 如果连接密码为空则切换至私钥认证模式
-	if strings.TrimSpace(r.Password) == "" {
-		conf.AuthType = ssh.KeyAuth
-	}
-	if _, err := ssh.NewSSH(conf).Connect(); err != nil {
-		return err
-	}
-	return nil
 }

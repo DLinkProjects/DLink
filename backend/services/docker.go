@@ -44,6 +44,16 @@ func (d *Docker) Connect(nodeId uint) error {
 	return nil
 }
 
+func (d *Docker) TestConnect(r entity.Server) error {
+	_, err := docker.New(
+		&docker.Config{
+			Host:    r.Host,
+			Context: context.Background(),
+		},
+	).Connect()
+	return err
+}
+
 func (d *Docker) GetContainerList() (containers []*entity.Container, err error) {
 	list, err := d.DockerCLI.ContainerList()
 	if err != nil {

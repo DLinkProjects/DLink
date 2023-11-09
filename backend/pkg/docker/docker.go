@@ -47,14 +47,17 @@ func (a *Adapter) Connect() (*Adapter, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 尝试 ping Docker 守护进程来验证连接是否成功
-	_, err = cli.Ping(a.ctx)
-	if err != nil {
+	a.cli = cli
+	// 尝试 Ping Docker 守护进程来验证连接是否成功
+	if err = a.Ping(); err != nil {
 		return nil, err
 	}
-
-	a.cli = cli
 	return a, nil
+}
+
+func (a *Adapter) Ping() error {
+	_, err := a.cli.Ping(a.ctx)
+	return err
 }
 
 // Close 关闭连接

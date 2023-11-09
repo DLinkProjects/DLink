@@ -30,10 +30,8 @@ func createTables(db *sqlx.DB) {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			host TEXT NOT NULL,
 			port INTEGER NOT NULL,
-			username TEXT NOT NULL,
-			password TEXT,
 			node_id INTEGER NOT NULL,
-			p_key_id INTEGER NOT NULL DEFAULT 0
+			tls_id INTEGER NOT NULL DEFAULT 0
 		);`
 
 	const nodesTables = `
