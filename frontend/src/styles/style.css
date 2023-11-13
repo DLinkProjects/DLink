@@ -59,7 +59,7 @@ scrollbar-track {
   background-color: transparent;
 }
 
-/* 修改semi默认的css */
+/* 修改 semi 默认的 css */
 .semi-table-tbody > .semi-table-row {
   display: table-row;
   background-color: var(--semi-color-bg-0);
@@ -67,4 +67,14 @@ scrollbar-track {
 
 .semi-table-header-sticky .semi-table-thead > .semi-table-row > .semi-table-row-head {
   background-color: var(--semi-color-bg-0);
+}
+
+.custom-card:hover {
+  border-color: var(--semi-color-fill-1);
+  border-style: solid;
+}
+
+.custom-card:active {
+  border-color: var(--semi-color-fill-2);
+  border-style: solid;
 }

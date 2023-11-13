@@ -8,7 +8,6 @@ import {
   IconDuration,
   IconSun,
   IconServer,
-  IconInfoCircle,
   IconKey,
   IconUploadError,
   IconUpload,
@@ -20,7 +19,6 @@ import Preferences from '@/components/settings/preferences';
 import About from '../settings/about';
 import { motion, useAnimation } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
 import toast from 'react-hot-toast';
 
 export default function Sider() {
@@ -43,7 +41,7 @@ export default function Sider() {
     { itemKey: 'servers', text: servers, icon: <IconServer /> },
     { itemKey: 'container', text: container, icon: <IconAppCenter /> },
     { itemKey: 'log', text: log, icon: <IconHistory /> },
-    { itemKey: 'key', text: '秘钥管理', icon: <IconKey /> },
+    { itemKey: 'cert', text: '证书', icon: <IconKey /> },
   ];
 
   const switchMode = () => {

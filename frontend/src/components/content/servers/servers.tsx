@@ -48,6 +48,8 @@ import prettyBytes from 'pretty-bytes';
 import LinuxSVG from '@/assets/images/icons/linux.svg';
 import CentOSSVG from '@/assets/images/icons/centos.svg';
 import DebianSVG from '@/assets/images/icons/debian.svg';
+import UbuntuSVG from '@/assets/images/icons/ubuntu.svg';
+import WindowsSVG from '@/assets/images/icons/windows.svg';
 import lodash from 'lodash';
 import { useStore } from '@/store';
 import WarnInfoComponents from './warnInfo';
@@ -352,6 +354,8 @@ export default function Servers() {
     const v = value.toLowerCase();
     if (v.includes('centos')) return <CentOSSVG />;
     if (v.includes('debian')) return <DebianSVG />;
+    if (v.includes('ubuntu')) return <UbuntuSVG />;
+    if (v.includes('desktop')) return <WindowsSVG />;
     return null;
   };
 
@@ -444,7 +448,7 @@ export default function Servers() {
                           setWarnInfo(summary?.warns);
                         }}
                       >
-                        {summary?.warns.length}
+                        {summary?.warns?.length}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item itemKey="镜像数">
@@ -479,7 +483,7 @@ export default function Servers() {
                   </Descriptions>
                   <Descriptions className="basis-2/5">
                     <Descriptions.Item itemKey="系统版本">
-                      <Tag color="cyan">{summary?.os_ver}</Tag>
+                      <Tag color="cyan">{summary?.os_ver || 'unknown'}</Tag>
                     </Descriptions.Item>{' '}
                     <Descriptions.Item itemKey="系统类型">
                       <Tag
