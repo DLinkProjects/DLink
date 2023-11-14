@@ -35,7 +35,7 @@ export default function About({ visible, setVisible }: AboutProps) {
   return (
     <Modal
       preventScroll={false}
-      // closeOnEsc={true}
+      closeOnEsc={true}
       title={t('about')}
       onCancel={() => setVisible(false)}
       visible={visible}

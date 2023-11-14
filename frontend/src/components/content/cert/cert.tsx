@@ -1,48 +1,71 @@
 import { useState } from 'react';
-import { Card, CardGroup, Popover, Avatar } from '@douyinfe/semi-ui';
-import { IconDelete, IconCopyAdd, IconKey } from '@douyinfe/semi-icons';
+import { Card, CardGroup, Popover, ButtonGroup, Button } from '@douyinfe/semi-ui';
+import { IconDelete, IconCopyAdd, IconAlignBottom } from '@douyinfe/semi-icons';
+import CreateCert from './createCert';
+import CertificateSvg from '@/assets/images/icons/certificate.svg?react';
 
 export default function Key() {
-  const [spacing, setSpacing] = useState(10);
   const { Meta } = Card;
+  const [createCertVisible, setCreateCertVisible] = useState(false);
+  const [isHovered, setIsHovered] = useState<null | number>(null);
+
+  const handleMouseEnter = (key: number) => {
+    setIsHovered(key);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(null);
+  };
 
   return (
     // 最顶层框架
     <div className="m-4">
-      <CardGroup spacing={spacing}>
+      <CardGroup spacing={10}>
         {new Array(8).fill(null).map((v, idx) => (
+          <div
+            key={idx}
+            onMouseEnter={() => {
+              handleMouseEnter(idx);
+            }}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Card
+              shadows="hover"
+              style={{ maxWidth: 269, width: 269 }}
+              bodyStyle={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Meta title="Docker Key" avatar={<CertificateSvg style={{ width: '1.5em', height: '1.5em' }} />} />
+              {isHovered === idx && (
+                <ButtonGroup size="small" theme="borderless">
+                  <Button icon={<IconAlignBottom />} />
+                  <Button type="danger" icon={<IconDelete />} />
+                </ButtonGroup>
+              )}
+            </Card>
+          </div>
+        ))}
+        <span onClick={() => setCreateCertVisible(true)}>
           <Card
-            shadows="hover"
-            style={{ maxWidth: 269, width: 269 }}
+            style={{
+              maxWidth: 269,
+              width: 269,
+            }}
             bodyStyle={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
             }}
+            className="border-dashed cursor-pointer hover:bg-tertiary-hover active:bg-tertiary-active custom-card"
           >
-            <Meta title="Docker Key" avatar={<IconKey size="extra-large" />} />
-            <Popover position="top" showArrow content={<article style={{ padding: 4 }}>删除 key</article>}>
-              <IconDelete style={{ color: 'var(--semi-color-danger)' }} />
-            </Popover>
-          </Card>
-        ))}
-        <Card
-          style={{
-            maxWidth: 269,
-            width: 269,
-          }}
-          bodyStyle={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          className="border-dashed cursor-pointer hover:bg-tertiary-hover active:bg-tertiary-active custom-card"
-        >
-          <Popover position="top" showArrow content={<article style={{ padding: 4 }}>添加 Key</article>}>
             <IconCopyAdd size="extra-large" />
-          </Popover>
-        </Card>
+          </Card>
+        </span>
       </CardGroup>
+      <CreateCert visible={createCertVisible} setVisible={setCreateCertVisible} />
     </div>
   );
 }

@@ -197,6 +197,7 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
         </TabPane>
         <TabPane tab="高级配置" itemKey="2">
           <Empty
+            className="mt-4"
             image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
             darkModeImage={<IllustrationNoContentDark style={{ width: 150, height: 150 }} />}
             title={t('functionsUnderConstruction')}

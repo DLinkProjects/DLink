@@ -45,11 +45,11 @@ import toast from 'react-hot-toast';
 import { Connect, GetImageList, GetServerSummary } from '@wailsApp/go/services/Docker';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
-import LinuxSVG from '@/assets/images/icons/linux.svg';
-import CentOSSVG from '@/assets/images/icons/centos.svg';
-import DebianSVG from '@/assets/images/icons/debian.svg';
-import UbuntuSVG from '@/assets/images/icons/ubuntu.svg';
-import WindowsSVG from '@/assets/images/icons/windows.svg';
+import LinuxSVG from '@/assets/images/icons/linux.svg?react';
+import CentOSSVG from '@/assets/images/icons/centos.svg?react';
+import DebianSVG from '@/assets/images/icons/debian.svg?react';
+import UbuntuSVG from '@/assets/images/icons/ubuntu.svg?react';
+import WindowsSVG from '@/assets/images/icons/windows.svg?react';
 import lodash from 'lodash';
 import { useStore } from '@/store';
 import WarnInfoComponents from './warnInfo';
@@ -227,7 +227,7 @@ export default function Servers() {
 
     // 如果当前节点的类型不是分组并且拖拽操作是需要把某个节点放入当前节点，那么就提示错误
     if (node.type !== 'group' && !dropToGap) {
-      toast.error('当前节点不是分组，不能放入!');
+      toast.error('当前节点不是分组，不能放入！');
       return;
     }
 

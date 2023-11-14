@@ -78,3 +78,15 @@ scrollbar-track {
   border-color: var(--semi-color-fill-2);
   border-style: solid;
 }
+
+.semi-modal-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: var(--semi-color-overlay-bg);
+  height: 100%;
+  z-index: 1000;
+  border-radius: 8px;
+}
