@@ -8,7 +8,7 @@ import {
   IconDuration,
   IconSun,
   IconServer,
-  IconKey,
+  IconSafe,
   IconUploadError,
   IconUpload,
 } from '@douyinfe/semi-icons';
@@ -41,7 +41,7 @@ export default function Sider() {
     { itemKey: 'servers', text: servers, icon: <IconServer /> },
     { itemKey: 'container', text: container, icon: <IconAppCenter /> },
     { itemKey: 'log', text: log, icon: <IconHistory /> },
-    { itemKey: 'cert', text: '证书', icon: <IconKey /> },
+    { itemKey: 'cert', text: '证书', icon: <IconSafe /> },
   ];
 
   const switchMode = () => {

@@ -50,6 +50,7 @@ import CentOSSVG from '@/assets/images/icons/centos.svg?react';
 import DebianSVG from '@/assets/images/icons/debian.svg?react';
 import UbuntuSVG from '@/assets/images/icons/ubuntu.svg?react';
 import WindowsSVG from '@/assets/images/icons/windows.svg?react';
+import DockerSVG from '@/assets/images/icons/docker.svg?react';
 import lodash from 'lodash';
 import { useStore } from '@/store';
 import WarnInfoComponents from './warnInfo';
@@ -554,10 +555,8 @@ export default function Servers() {
         ) : (
           <div className="flex flex-grow h-full w-full items-center justify-center">
             <Empty
-              image={<IllustrationConstruction style={{ width: 150, height: 150 }} />}
-              darkModeImage={<IllustrationConstructionDark style={{ width: 150, height: 150 }} />}
-              title={t('haveNothing')}
-              description={t('noServers')}
+              image={<DockerSVG style={{ width: 150, height: 150, fill: 'var( --semi-color-tertiary-light-hover)' }} />}
+              darkModeImage={<DockerSVG style={{ width: 150, height: 150 }} />}
             />
           </div>
         )}

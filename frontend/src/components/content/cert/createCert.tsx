@@ -17,6 +17,8 @@ export default function CreateCert({ visible, setVisible }: CreateCertProps) {
   const [isCert, setIsCert] = useState(false);
   const [isCA, setIsCA] = useState(false);
 
+  let fileObj = {};
+
   const KeyTag = () => {
     return (
       <Space>
@@ -73,29 +75,40 @@ export default function CreateCert({ visible, setVisible }: CreateCertProps) {
   };
 
   const readFile = (fileInput: any) => {
-    console.log(fileInput);
-    const cert = fileInput.fileList[0].fileInstance;
+    // 文件清除操作
+    // if (fileInput.fileList.length === 0) {
+    //   setIsKey(false);
+    //   setIsCert(false);
+    //   setIsCA(false);
+    //   return;
+    // }
     const reader = new FileReader();
-    reader.onload = (event: ProgressEvent<FileReader>) => {
-      if (isPrivateKey(event?.target?.result as string)) {
-        setIsKey(true);
-        return;
-      } else if (event?.target?.result) {
-        const arrayBuffer = pemToArrayBuffer(event.target.result as string);
-        const asn1 = fromBER(arrayBuffer);
-        const certificate = new Certificate({ schema: asn1.result });
-        const basicConstraints = certificate.extensions?.find(ext => ext.extnID === '2.5.29.19');
-        if (basicConstraints !== undefined && basicConstraints.parsedValue.cA === true) {
-          setIsCA(true);
-          return;
-        } else {
-          setIsCert(true);
-          return;
-        }
-      }
-    };
+    for (const file of fileInput.fileList) {
+      const pemFile = file.fileInstance;
 
-    reader.readAsText(cert);
+      console.log(pemFile);
+
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        if (isPrivateKey(event?.target?.result as string)) {
+          setIsKey(true);
+          return;
+        } else if (event?.target?.result) {
+          const arrayBuffer = pemToArrayBuffer(event.target.result as string);
+          const asn1 = fromBER(arrayBuffer);
+          const certificate = new Certificate({ schema: asn1.result });
+          const basicConstraints = certificate.extensions?.find(ext => ext.extnID === '2.5.29.19');
+          if (basicConstraints !== undefined && basicConstraints.parsedValue.cA === true) {
+            setIsCA(true);
+            return;
+          } else {
+            setIsCert(true);
+            return;
+          }
+        }
+      };
+
+      reader.readAsText(pemFile);
+    }
   };
 
   // withField 封装自定义表单控件
@@ -127,8 +140,7 @@ export default function CreateCert({ visible, setVisible }: CreateCertProps) {
               limit={3}
               uploadTrigger="custom"
               accept=".pem"
-              // 我需要获取到准备上传的文件
-              // beforeUpload={}
+              onChange={readFile}
             />
           </Form>
         </TabPane>

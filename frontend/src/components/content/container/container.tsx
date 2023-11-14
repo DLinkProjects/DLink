@@ -90,7 +90,7 @@ export default function Container() {
   }
 
   return (
-    <div className="m-4 flex flex-col h-full">
+    <div className="m-4 flex flex-col h-full" style={{ height: 'calc(100% - 2rem)' }}>
       <div>
         <RadioGroup
           type="button"
