@@ -85,7 +85,7 @@ export default function CreateServerComponents({ visible, setVisible, onGetServe
           <Button
             theme="solid"
             type="primary"
-            className="float-left"
+            style={{ marginLeft: 0, float: 'left' }}
             onClick={onTestServerConnect}
             loading={testConnectLoading}
           >

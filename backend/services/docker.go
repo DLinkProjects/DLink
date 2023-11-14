@@ -85,10 +85,9 @@ func (d *Docker) GetImageList() (images []*entity.Image, err error) {
 	for _, v := range list {
 		// TODO: 需要处理可能出现错误的情况
 		repoTags := strings.Split(v.RepoTags[0], ":")
-		id := strings.Split(v.ID, ":")
 		images = append(images, &entity.Image{
 			Name:    repoTags[0],
-			ID:      id[1],
+			ID:      v.ID,
 			Tag:     repoTags[1],
 			Size:    v.Size,
 			Created: v.Created,

@@ -29,7 +29,7 @@ export default function CreateCert({ visible, setVisible }: CreateCertProps) {
             isCA !== true ? <IconInfoCircle /> : <IconTickCircle style={{ color: 'var(--semi-color-success)' }} />
           }
         >
-          {'TLS CA 证书'}
+          {'TLS CA'}
         </Tag>
         <Tag
           color="light-blue"
@@ -40,7 +40,7 @@ export default function CreateCert({ visible, setVisible }: CreateCertProps) {
             isCert !== true ? <IconInfoCircle /> : <IconTickCircle style={{ color: 'var(--semi-color-success)' }} />
           }
         >
-          {'TLS 证书'}
+          {'TLS Cert'}
         </Tag>
         <Tag
           color="light-blue"

@@ -65,8 +65,7 @@ export default function Sider() {
     };
     const mql: MediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
     function matchMode(e: MediaQueryListEvent): void {
-      const body: HTMLElement = document.body;
-
+      const body = document.body;
       if (e.matches) {
         if (!body.hasAttribute('theme-mode')) {
           body.setAttribute('theme-mode', 'dark');

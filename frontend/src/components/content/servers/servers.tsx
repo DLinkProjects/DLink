@@ -294,53 +294,6 @@ export default function Servers() {
     setTreeData(newData);
   };
 
-  // Table 列渲染
-  const TablesHash: React.FC<any> = ({ value }) => {
-    return (
-      <Paragraph
-        copyable={{
-          content: value,
-          successTip: <IconTick />,
-          icon: <IconCopy style={{ color: 'var(--semi-color-text-2)' }} />,
-        }}
-      >
-        <Text
-          ellipsis={{
-            showTooltip: {
-              opts: { content: value },
-            },
-          }}
-          style={{ width: 80 }}
-        >
-          {value}
-        </Text>
-      </Paragraph>
-    );
-  };
-
-  const TablesActions: React.FC = () => {
-    return (
-      <div>
-        <ButtonGroup size="small" theme="borderless">
-          <Button icon={<IconTreeTriangleRight />} />
-          <Button type="danger" icon={<IconDelete />} />
-        </ButtonGroup>
-      </div>
-    );
-  };
-
-  const TableCreated: React.FC<any> = ({ value }) => {
-    return <span>{moment.unix(value).format('YYYY-MM-DD HH:mm:ss')}</span>;
-  };
-
-  const TableUsed: React.FC<any> = ({ value }) => {
-    return <Tag color={value ? 'green' : 'blue'}>{value ? '已使用' : '未使用'}</Tag>;
-  };
-
-  const TableSize: React.FC<any> = ({ value }) => {
-    return <span>{prettyBytes(value)}</span>;
-  };
-
   const IconForOSType: React.FC<{ value: string }> = ({ value }) => {
     switch (value.toLowerCase()) {
       case 'linux':
@@ -410,7 +363,7 @@ export default function Servers() {
           </div>
         </div>
       </Resizable>
-      <div className="flex flex-grow h-full w-full">
+      <div className="flex flex-grow h-full w-full" style={{ overflow: 'hidden' }}>
         {selecteServer ? (
           <div className="flex flex-col overflow-hidden max-h-full w-full">
             <div className="flex-grow-0 flex-shrink-0 mx-4 mt-4">
@@ -484,7 +437,7 @@ export default function Servers() {
                   <Descriptions className="basis-2/5">
                     <Descriptions.Item itemKey="系统版本">
                       <Tag color="cyan">{summary?.os_ver || 'unknown'}</Tag>
-                    </Descriptions.Item>{' '}
+                    </Descriptions.Item>
                     <Descriptions.Item itemKey="系统类型">
                       <Tag
                         color="cyan"
@@ -515,7 +468,6 @@ export default function Servers() {
                 }}
                 bodyStyle={{ padding: 0, flex: '1', minHeight: '0', position: 'relative' }}
               >
-                {/* 表格组件 */}
                 <Table
                   dataSource={images}
                   pagination={false}
@@ -526,45 +478,75 @@ export default function Servers() {
                     title="Repository"
                     dataIndex="name"
                     key="name"
-                    ellipsis
-                    render={value => <Typography.Text ellipsis={{ showTooltip: true }}>{value}</Typography.Text>}
+                    render={value => (
+                      <Typography.Text ellipsis={{ showTooltip: true }}>
+                        <a>{value}</a>
+                      </Typography.Text>
+                    )}
                   />
                   <Column
                     title="Tag"
                     dataIndex="tag"
                     key="tag"
-                    ellipsis
                     render={value => <Typography.Text ellipsis={{ showTooltip: true }}>{value}</Typography.Text>}
                   />
                   <Column
-                    className="whitespace-nowrap"
                     title="Image ID"
                     dataIndex="id"
                     key="id"
-                    render={value => <TablesHash value={value} />}
-                  />
-                  <Column
-                    title="Created"
-                    dataIndex="created"
-                    key="created"
-                    render={value => <TableCreated value={value} />}
-                    ellipsis
-                  />
-                  <Column
-                    title="Size"
-                    dataIndex="size"
-                    key="size"
-                    render={value => <TableSize value={value} />}
-                    ellipsis
+                    className="whitespace-nowrap"
+                    render={value => (
+                      <Paragraph
+                        copyable={{
+                          content: value,
+                          successTip: <IconTick />,
+                          icon: <IconCopy style={{ color: 'var(--semi-color-text-2)' }} />,
+                        }}
+                      >
+                        <Text
+                          ellipsis={{
+                            showTooltip: {
+                              opts: { content: value },
+                            },
+                          }}
+                          style={{ width: 80 }}
+                        >
+                          {value}
+                        </Text>
+                      </Paragraph>
+                    )}
                   />
                   <Column
                     title="Used"
                     dataIndex="used"
                     key="used"
-                    ellipsis
-                    render={value => <TableUsed value={value} />}
+                    render={value => <Tag color={value ? 'green' : 'blue'}>{value ? '已使用' : '未使用'}</Tag>}
                   />
-                  <Column title="Actions" dataIndex="actions" key="actions" render={() => <TablesActions />} />
+                  <Column
+                    title="Size"
+                    dataIndex="size"
+                    key="size"
+                    ellipsis
+                    render={value => <span>{prettyBytes(value)}</span>}
+                  />
+                  <Column
+                    title="Created"
+                    dataIndex="created"
+                    key="created"
+                    ellipsis
+                    render={value => <span>{moment.unix(value).format('YYYY-MM-DD HH:mm:ss')}</span>}
+                  />
+                  <Column
+                    title="Actions"
+                    dataIndex="actions"
+                    key="actions"
+                    render={() => (
+                      <ButtonGroup size="small" theme="borderless">
+                        <Button icon={<IconTreeTriangleRight />} />
+                        <Button type="danger" icon={<IconDelete />} />
+                      </ButtonGroup>
+                    )}
+                  />
                 </Table>
               </Card>
             </div>

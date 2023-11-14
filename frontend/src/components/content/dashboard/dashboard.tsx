@@ -66,55 +66,43 @@ export default function Dashboard() {
   return (
     <>
       <div className="flex flex-row gap-4 m-4">
-        <div className="basis-1/4">
-          <Card>
-            <IconServer className="text-6xl" />
-            <div className="float-right text-center">
-              <div className="text-current">服务器</div>
-              <span className="text-4xl">65</span>
-            </div>
-          </Card>
-        </div>
-        <div className="basis-1/4">
-          <Card>
-            <IconHelm className="text-6xl" />
-            <div className="float-right text-center">
-              <div className="text-current">镜像</div>
-              <span className="text-4xl">65</span>
-            </div>
-          </Card>
-        </div>
-        <div className="basis-1/4">
-          <Card>
-            <IconKanban className="text-6xl" />
-            <div className="float-right text-center">
-              <div className="text-current">容器</div>
-              <span className="text-4xl">65</span>
-            </div>
-          </Card>
-        </div>
-        <div className="basis-1/4">
-          <Card>
-            <IconCloud className="text-6xl" />
-            <div className="float-right text-center">
-              <div className="text-current">存储卷</div>
-              <span className="text-4xl">65</span>
-            </div>
-          </Card>
-        </div>
+        <Card className="basis-1/4">
+          <IconServer className="text-6xl" />
+          <div className="float-right text-center">
+            <div className="text-current">服务器</div>
+            <span className="text-4xl">65</span>
+          </div>
+        </Card>
+        <Card className="basis-1/4">
+          <IconHelm className="text-6xl" />
+          <div className="float-right text-center">
+            <div className="text-current">镜像</div>
+            <span className="text-4xl">65</span>
+          </div>
+        </Card>
+        <Card className="basis-1/4">
+          <IconKanban className="text-6xl" />
+          <div className="float-right text-center">
+            <div className="text-current">容器</div>
+            <span className="text-4xl">65</span>
+          </div>
+        </Card>
+        <Card className="basis-1/4">
+          <IconCloud className="text-6xl" />
+          <div className="float-right text-center">
+            <div className="text-current">存储卷</div>
+            <span className="text-4xl">65</span>
+          </div>
+        </Card>
       </div>
 
       <div className="flex flex-row gap-4 m-4">
-        <div className="basis-1/2">
-          <Card>
-            <ReactECharts theme={chartTheme} ref={containerStatusRef} option={containerStatusOption} />
-          </Card>
-        </div>
-        <div className="basis-1/2">
-          <Card>
-            <ReactECharts theme={chartTheme} ref={chartRef2} option={containerStatusOption} />
-          </Card>
-        </div>
+        <Card className="basis-1/2">
+          <ReactECharts theme={chartTheme} ref={containerStatusRef} option={containerStatusOption} />
+        </Card>
+        <Card className="basis-1/2">
+          <ReactECharts theme={chartTheme} ref={chartRef2} option={containerStatusOption} />
+        </Card>
       </div>
     </>
   );
