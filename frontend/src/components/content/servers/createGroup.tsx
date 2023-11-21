@@ -33,7 +33,7 @@ export default function CreateGroupComponents({ visible, setVisible, onGetServer
   return (
     <Modal
       preventScroll={false}
-      width={'600px'}
+      width={'400px'}
       title="添加新分组"
       visible={visible}
       onCancel={() => setVisible(false)}

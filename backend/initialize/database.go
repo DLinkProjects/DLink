@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"fmt"
+
 	"github.com/DLinkProjects/DLink/backend/consts"
 	"github.com/DLinkProjects/DLink/backend/pkg/storage"
 	"github.com/jmoiron/sqlx"
@@ -50,6 +51,13 @@ func createTables(db *sqlx.DB) {
     		language TEXT NOT NULL DEFAULT 'auto' CHECK(theme IN ('auto','chinese','english')),
     		auto_check_update BOOLEAN DEFAULT 1
 		);`
+
+	const certTables = `
+		CREATE TABLE cert  (
+			id INTEGER PRIMARY KEY AUTOINCREMENT ,
+			certName TEXT NOT NULL
+		);
+	`
 
 	tables := []string{serversTables, nodesTables, preferencesTables}
 	for _, table := range tables {

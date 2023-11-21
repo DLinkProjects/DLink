@@ -31,6 +31,13 @@ export default function Key() {
     setIsHovered(null);
   };
 
+  const delCert = (certName: string) => {
+    console.log(certName);
+  };
+  const downloadCert = (certName: string) => {
+    console.log(certName);
+  };
+
   return (
     // 最顶层框架
     <div className="m-4" style={{ height: 'calc(100% - 2rem)' }}>
@@ -71,8 +78,19 @@ export default function Key() {
 
                 {isHovered === idx && (
                   <ButtonGroup size="small" theme="borderless">
-                    <Button icon={<IconAlignBottom />} />
-                    <Button type="danger" icon={<IconDelete />} />
+                    <Button
+                      icon={<IconAlignBottom />}
+                      onClick={() => {
+                        delCert(v);
+                      }}
+                    />
+                    <Button
+                      type="danger"
+                      icon={<IconDelete />}
+                      onClick={() => {
+                        downloadCert(v);
+                      }}
+                    />
                   </ButtonGroup>
                 )}
               </Card>
